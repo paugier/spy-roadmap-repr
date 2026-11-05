@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPy roadmap</title>
+<style>
+:root{color-scheme:light dark;--bg:#fff;--fg:#1d2226;--mut:#667;--line:#bbc;--panel:#f4f5f8;
+--done:#4caf7a;--wip:#f2b134;--planned:#7aa7e0;--idea:#c9c9d3;--blocked:#e0605e;--txt:#111}
+@media(prefers-color-scheme:dark){:root{--bg:#161a1d;--fg:#e6e8ea;--mut:#9aa;--line:#556;--panel:#222831;
+--done:#2f7d55;--wip:#a8791b;--planned:#3f68a0;--idea:#4a4a58;--blocked:#9b3c3b;--txt:#f2f2f2}}
+body{margin:0;font:15px system-ui,sans-serif;background:var(--bg);color:var(--fg);display:flex;flex-direction:column;height:100vh}
+header{padding:8px 12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;border-bottom:1px solid var(--line)}
+h1{font-size:18px;margin:0 8px 0 0}
+select,label{font:inherit;color:inherit}select{background:var(--panel);border:1px solid var(--line);padding:3px}
+.legend span{display:inline-block;padding:1px 8px;margin-right:4px;border-radius:9px;color:var(--txt);font-size:12px}
+main{flex:1;display:flex;min-height:0}
+#cy{flex:1;min-width:0}
+aside{width:300px;padding:12px;background:var(--panel);overflow:auto;border-left:1px solid var(--line)}
+aside h2{font-size:16px;margin:0 0 4px}aside .mut{color:var(--mut);font-size:13px}
+aside a{color:inherit}aside ul{padding-left:18px}
+.prog{height:8px;background:var(--idea);border-radius:4px;margin:6px 0}.prog div{height:100%;background:var(--done);border-radius:4px}
+@media(max-width:700px){main{flex-direction:column}aside{width:auto;max-height:35vh;border-left:0;border-top:1px solid var(--line)}}
+</style></head><body>
+<header><h1>SPy roadmap</h1>
+<label>Pillar <select id="pillar"><option value="">all</option></select></label>
+<label>Path to goal <select id="goal"><option value="">none</option></select></label>
+<label><input type="checkbox" id="hidedone"> hide done</label>
+<span class="legend" id="legend"></span></header>
+<main><div id="cy"></div><aside id="panel"><p class="mut">Click a node. Arrows go from a prerequisite to what it unlocks.</p></aside></main>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dagre@0.8.5/dist/dagre.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+<script>
+const DATA = __DATA__;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = {done:'--done','in-progress':'--wip',planned:'--planned',idea:'--idea',blocked:'--blocked'};
+const byId = Object.fromEntries(DATA.nodes.map(n => [n.id, n]));
+const el = (tag, text, attrs={}) => { const e = document.createElement(tag); if (text) e.textContent = text; Object.assign(e, attrs); return e; };
+
+for (const s in COL) { const sp = el('span', s); sp.style.background = css(COL[s]); legend.append(sp); }
+[...new Set(DATA.nodes.map(n => n.pillar))].forEach(p => pillar.append(el('option', p, {value: p})));
+DATA.nodes.filter(n => n.kind === 'goal').forEach(n => goal.append(el('option', n.title, {value: n.id})));
+
+const cy = cytoscape({
+  container: document.getElementById('cy'),
+  elements: [
+    ...DATA.nodes.map(n => ({data: {id: n.id, label: n.title, status: n.status, pillar: n.pillar, kind: n.kind}})),
+    ...DATA.nodes.flatMap(n => (n.depends_on || []).map(d => ({data: {id: d + '>' + n.id, source: d, target: n.id}}))),
+  ],
+  style: [
+    {selector: 'node', style: {label: 'data(label)', shape: 'round-rectangle', width: 'label', height: 'label', padding: '8px',
+      'text-wrap': 'wrap', 'text-max-width': 150, 'font-size': 11, 'text-valign': 'center', color: css('--txt'),
+      'background-color': n => css(COL[n.data('status')])}},
+    {selector: 'node[kind = "goal"]', style: {'border-width': 3, 'border-color': css('--fg'), 'font-weight': 'bold'}},
+    {selector: 'edge', style: {width: 1.5, 'line-color': css('--line'), 'target-arrow-color': css('--line'), 'target-arrow-shape': 'triangle', 'curve-style': 'bezier'}},
+    {selector: '.dim', style: {opacity: 0.15}},
+    {selector: 'node:selected', style: {'border-width': 3, 'border-color': css('--fg')}},
+  ],
+});
+
+function layout() { cy.layout({name: 'dagre', rankDir: 'LR', nodeSep: 14, rankSep: 70, animate: false}).run(); cy.fit(undefined, 20); }
+function refresh() {
+  cy.nodes().forEach(n => {
+    const hide = (pillar.value && n.data('pillar') !== pillar.value) || (hidedone.checked && n.data('status') === 'done');
+    n.style('display', hide ? 'none' : 'element');
+  });
+  cy.elements().removeClass('dim');
+  if (goal.value) {
+    const g = cy.getElementById(goal.value), up = g.union(g.predecessors());
+    cy.elements().not(up).addClass('dim');
+  }
+  layout();
+}
+[pillar, goal, hidedone].forEach(c => c.addEventListener('change', refresh));
+
+function progress(id) {
+  const ups = cy.getElementById(id).predecessors().nodes();
+  return ups.length ? [ups.filter('[status = "done"]').length, ups.length] : null;
+}
+cy.on('tap', 'node', e => {
+  const n = byId[e.target.id()], p = document.getElementById('panel');
+  p.replaceChildren(el('h2', n.title), el('div', `${n.kind} · ${n.status} · ${n.pillar}${n.when ? ' · ' + n.when : ''}`, {className: 'mut'}), el('p', n.summary));
+  const pr = progress(n.id);
+  if (pr) { p.append(el('div', `${pr[0]} of ${pr[1]} prerequisites done`, {className: 'mut'}));
+    const bar = el('div', '', {className: 'prog'}); const fill = el('div'); fill.style.width = (100 * pr[0] / pr[1]) + '%'; bar.append(fill); p.append(bar); }
+  const list = (title, nodes) => { if (!nodes.length) return; p.append(el('strong', title)); const ul = el('ul');
+    nodes.forEach(m => { const li = el('li'); const a = el('a', m.data('label'), {href: '#'}); a.onclick = ev => { ev.preventDefault(); cy.$(':selected').unselect(); m.select(); m.emit('tap'); }; li.append(a); ul.append(li); }); p.append(ul); };
+  list('Needs', e.target.incomers('node'));
+  list('Unlocks', e.target.outgoers('node'));
+  if (n.links && n.links.length) { p.append(el('strong', 'Links')); const ul = el('ul');
+    n.links.forEach(u => { const li = el('li'); li.append(el('a', u.replace('https://github.com/spylang/spy/', ''), {href: u, target: '_blank', rel: 'noopener'})); ul.append(li); }); p.append(ul); }
+});
+refresh();
+</script></body></html>

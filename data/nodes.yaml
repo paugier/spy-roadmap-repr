@@ -1,0 +1,63 @@
+# One node per line. Fields: id, title, kind (goal|feature|task|problem|bug),
+# status (idea|planned|in-progress|done|blocked), pillar, when, summary,
+# depends_on (ids of prerequisites), links (PRs/issues), notes (book page).
+# Seeded from SPy's ROADMAP.md (last updated 2026-04-17); dependencies are
+# only those stated or clearly implied there, to be reviewed.
+
+# ---- Goals (northern stars) ----
+- {id: interp-in-spy, title: SPy interpreter written in SPy, kind: goal, status: planned, pillar: core, summary: "The northern star of the core language: SPy becomes expressive enough to implement its own interpreter.", depends_on: [heap-classes, class-modifiers, try-catch, with-ctx, str-bytes]}
+- {id: libs-from-c, title: posix, socket and sqlite wrapping C libraries, kind: goal, status: planned, pillar: spy-c, summary: "Northern star of SPy/C integration: standard-library modules implemented by wrapping existing C libraries.", depends_on: [c-integration]}
+- {id: python-interop, title: Full SPy/Python interop, kind: goal, status: planned, pillar: spy-python, summary: "SPy can import Python modules and be imported from Python. SPy then becomes a better Cython.", depends_on: [c-integration, refcounting]}
+
+# ---- Core language ----
+- {id: blue-args, title: "Blue-time *args and **kwargs", kind: feature, status: planned, pillar: core, when: 2026-Q2, summary: "Variable numbers of arguments handled at compile time (blue time)."}
+- {id: print-varargs, title: "print() with variable arguments", kind: feature, status: planned, pillar: core, when: 2026-Q2, summary: "Needs some macro-like functionality."}
+- {id: fstrings, title: f-strings, kind: feature, status: planned, pillar: core, when: 2026-Q2, summary: "Formatted string literals."}
+- {id: class-modifiers, title: "Metaprogramming for class modifiers (dataclasses...)", kind: feature, status: planned, pillar: core, summary: "Enough compile-time metaprogramming to implement things like dataclasses in SPy itself."}
+- {id: live-image, title: Serialize the live image after redshifting, kind: feature, status: planned, pillar: core, summary: "Save the state of the program after the compile-time phase (redshifting)."}
+- {id: heap-classes, title: Heap-allocated classes, kind: feature, status: planned, pillar: core, summary: "Classes whose instances live on the heap and are accessed by reference.", depends_on: [gc-ref]}
+- {id: with-ctx, title: "with and context managers", kind: feature, status: planned, pillar: core, summary: "Support for the with statement."}
+- {id: try-catch, title: try/except, kind: feature, status: planned, pillar: core, summary: "Today every raise becomes a panic that stops the program."}
+- {id: dict-literals, title: dict literals, kind: feature, status: done, pillar: core, when: 2026-Q1, links: [https://github.com/spylang/spy/issues/342], summary: "Write {k: v} directly in SPy code."}
+- {id: cli-args, title: CLI arguments, kind: feature, status: done, pillar: core, when: 2026-Q1, links: [https://github.com/spylang/spy/issues/353], summary: "SPy programs can read command-line arguments."}
+- {id: tuple, title: Compile-time friendly tuple, kind: feature, status: done, pillar: core, when: 2026-Q1, links: [https://github.com/spylang/spy/pull/402], summary: "Tuples usable in compile-time computations."}
+- {id: is-op, title: "is and is not", kind: feature, status: done, pillar: core, when: 2026-Q1, links: [https://github.com/spylang/spy/pull/428], summary: "Identity comparison operators."}
+- {id: pep695, title: PEP 695 syntax for generic functions, kind: feature, status: done, pillar: core, when: 2026-Q1, links: [https://github.com/spylang/spy/pull/437], summary: "Python 3.12 generic syntax as sugar for blue generic functions."}
+- {id: default-args, title: Default arguments, kind: feature, status: done, pillar: core, when: 2026-Q1, links: [https://github.com/spylang/spy/pull/442], summary: "Functions can have default argument values."}
+- {id: f32-complex, title: f32 and complex types, kind: feature, status: done, pillar: core, when: 2026-Q1, links: [https://github.com/spylang/spy/pull/347, https://github.com/spylang/spy/pull/398], summary: "Single-precision floats and complex numbers."}
+- {id: debugging, title: "Better debugging (tracebacks, breakpoint)", kind: feature, status: done, pillar: core, when: 2025-Q4, summary: "SPy-level tracebacks and breakpoint()."}
+- {id: list-literals, title: list literals, kind: feature, status: done, pillar: core, when: 2025-Q4, summary: "Write [a, b, c] directly in SPy code."}
+- {id: for-loops, title: "for loops, range, iterator protocol", kind: feature, status: done, pillar: core, when: 2025-Q3, summary: "Iteration over ranges and user-defined iterators."}
+- {id: dunder-meta, title: "__dunder__ methods and metafunctions", kind: feature, status: done, pillar: core, when: 2025-Q3, summary: "Refactored operator protocol, plus blue-time descriptors."}
+- {id: errors-checks, title: Better error messages and blue/red checks, kind: feature, status: done, pillar: core, when: 2025-Q3, summary: "Proper messages instead of assertion errors; error when a blue function gets red arguments."}
+
+# ---- Standard library ----
+- {id: str-bytes, title: str and bytes in pure SPy, kind: feature, status: planned, pillar: stdlib, when: 2026-Q2, summary: "Rewrite the core string types in SPy rather than in the runtime."}
+- {id: socket, title: socket support, kind: feature, status: planned, pillar: stdlib, summary: "Network sockets.", depends_on: [c-integration]}
+- {id: full-io, title: Full I/O without ad-hoc builtins, kind: feature, status: planned, pillar: stdlib, summary: "Replace special-case builtins with the general C-call mechanism.", depends_on: [c-integration, file-io]}
+- {id: more-stdlib, title: "datetime, argparse, json", kind: feature, status: planned, pillar: stdlib, summary: "More standard-library modules."}
+- {id: array-improve, title: Improve array, kind: feature, status: planned, pillar: stdlib, summary: "array is a proof of concept for now, and very limited.", depends_on: [stdlib-foundations]}
+- {id: stdlib-foundations, title: "stdlib directory, list, dict, array", kind: feature, status: done, pillar: stdlib, when: 2025-Q3, summary: "SPy modules importable from stdlib/, with first list, dict and array."}
+- {id: file-io, title: Preliminary file I/O and file object, kind: feature, status: done, pillar: stdlib, when: 2026-Q1, links: [https://github.com/spylang/spy/pull/447], summary: "Read and write files."}
+- {id: builtin-types, title: "Slices, str.replace, builtin type improvements", kind: feature, status: done, pillar: stdlib, when: 2026-Q1, links: [https://github.com/spylang/spy/pull/345, https://github.com/spylang/spy/pull/394, https://github.com/spylang/spy/pull/460], summary: "More complete builtin types."}
+
+# ---- Memory management ----
+- {id: ptr-kinds, title: Pointer kinds (object, unbounded and bounded array), kind: feature, status: planned, pillar: memory, summary: "Distinguish the three pointer kinds, similar to Rust slices."}
+- {id: refcounting, title: Reference counting, kind: feature, status: planned, pillar: memory, summary: "Plain refcounting in pure SPy; with Python interop it maps to Py_IncRef/Py_DecRef and CPython's GC."}
+- {id: whippet, title: Experiment with Whippet GC, kind: feature, status: idea, pillar: memory, summary: "Try an alternative garbage collector."}
+- {id: gc-alloc, title: gc_alloc vs raw_malloc, kind: feature, status: done, pillar: memory, when: 2026-Q1, links: [https://github.com/spylang/spy/pull/371, https://github.com/spylang/spy/pull/383], summary: "Separate garbage-collected and manual allocation."}
+- {id: gc-ref, title: gc_ref and raw_ref, kind: feature, status: done, pillar: memory, when: 2026-Q1, depends_on: [gc-alloc], summary: "Typed references for each allocation kind."}
+- {id: boehm, title: Boehm GC support, kind: feature, status: done, pillar: memory, when: 2026-Q1, links: [https://github.com/spylang/spy/pull/383], depends_on: [gc-alloc], summary: "Automatic memory management through the Boehm collector."}
+
+# ---- SPy/C integration ----
+- {id: c-integration, title: SPy/C integration (FFI), kind: feature, status: in-progress, pillar: spy-c, when: 2026-Q2, summary: "Generic way to call C libraries from SPy, in both interpreter and compiler. Related work: Zig's @cImport."}
+
+# ---- SPy/Python integration ----
+- {id: py-cffi, title: py-cffi output kind, kind: feature, status: done, pillar: spy-python, when: 2025-Q2, summary: "Compile SPy to C, wrap with cffi and import in CPython, for scalars and arrays."}
+- {id: array-memoryview, title: array <-> memoryview / numpy conversion, kind: feature, status: planned, pillar: spy-python, summary: "Automatic conversion between SPy arrays and numpy arrays.", depends_on: [py-cffi, array-improve]}
+
+# ---- Documentation and tooling ----
+- {id: cli-subcommands, title: CLI with subcommands, kind: task, status: done, pillar: tooling, when: 2026-Q1, links: [https://github.com/spylang/spy/pull/332], summary: "spy build, spy run... instead of flags."}
+- {id: docs, title: "Docs skeleton, automation, mkdocs-material", kind: task, status: done, pillar: tooling, when: 2026-Q1, links: [https://github.com/spylang/spy/pull/349, https://github.com/spylang/spy/pull/372], summary: "Documentation site and its build."}
+- {id: html-ast, title: HTML backend for AST visualization, kind: task, status: done, pillar: tooling, when: 2026-Q1, links: [https://github.com/spylang/spy/pull/413, https://github.com/spylang/spy/pull/414, https://github.com/spylang/spy/pull/424], summary: "Look at the syntax tree in a browser."}
+- {id: playground-share, title: "Playground: share button and snippet links", kind: task, status: done, pillar: tooling, when: 2026-Q1, links: [https://github.com/spylang/spy/pull/427], summary: "Share code from the browser playground."}
