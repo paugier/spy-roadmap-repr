@@ -11,6 +11,13 @@ status = "planned"
 summary = "The northern star of the core language: SPy becomes expressive enough to implement its own interpreter."
 depends_on = ["heap-classes", "class-modifiers", "try-catch", "with-ctx", "str-bytes"]
 
+[faster-interpreter]
+title = "Faster interpreter"
+kind = "goal"
+status = "idea"
+summary = "Programs run in the SPy interpreter (before compilation) much faster than today. A first step is to write the interpreter itself in SPy, so that it can be compiled."
+depends_on = ["interp-in-spy"]
+
 [blue-args]
 title = "Blue-time *args and **kwargs"
 kind = "feature"

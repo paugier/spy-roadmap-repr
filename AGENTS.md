@@ -79,7 +79,12 @@ and tooling (7).
 
 ### Conventions
 
-- `goal` nodes are the "northern stars"; the "Path to goal" selector lists them.
+- `goal` nodes are the "northern stars"; the "Path to goal" selector lists them. A goal
+  may depend on other goals: a main goal (nothing depends on it, drawn bigger, e.g.
+  "Faster interpreter", "Python-like stdlib", "Full SPy/Python interop") sits on top
+  of the goals of the pillars that lead to it (e.g. "SPy interpreter written in SPy").
+  The selector groups them as main and intermediate goals, computed from the
+  dependencies; there is no field for it.
 - A dependency means "cannot be finished or used without". Add one only when the sources
   state it or the design makes it clear, never to make the graph look connected.
 - An edge goes from the prerequisite to what it unlocks, so the layout reads left to

@@ -4,6 +4,13 @@
 title = "Standard library"
 order = 2
 
+[python-like-stdlib]
+title = "Python-like stdlib"
+kind = "goal"
+status = "planned"
+summary = "The modules a Python user expects (str, bytes, array, file I/O, sockets, datetime, argparse, json...) are available in SPy and behave as in Python."
+depends_on = ["str-bytes", "array-improve", "full-io", "socket", "more-stdlib", "libs-from-c"]
+
 [str-bytes]
 title = "str and bytes in pure SPy"
 kind = "feature"

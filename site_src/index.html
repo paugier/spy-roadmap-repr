@@ -41,12 +41,16 @@ const el = (tag, text, attrs={}) => { const e = document.createElement(tag); if 
 
 for (const s in COL) { const sp = el('span', s); sp.style.background = css(COL[s]); legend.append(sp); }
 DATA.pillars.forEach(p => pillar.append(el('option', p.title, {value: p.id})));
-DATA.nodes.filter(n => n.kind === 'goal').forEach(n => goal.append(el('option', n.title, {value: n.id})));
+const goals = DATA.nodes.filter(n => n.kind === 'goal');
+const isMain = n => !goals.some(g => (g.depends_on || []).includes(n.id));
+[['Main goals', goals.filter(isMain)], ['Intermediate goals', goals.filter(n => !isMain(n))]].forEach(([label, list]) => {
+  if (!list.length) return;
+  const g = el('optgroup', '', {label}); list.forEach(n => g.append(el('option', n.title, {value: n.id}))); goal.append(g); });
 
 const cy = cytoscape({
   container: document.getElementById('cy'),
   elements: [
-    ...DATA.nodes.map(n => ({data: {id: n.id, label: n.title, status: n.status, pillar: n.pillar, kind: n.kind}})),
+    ...DATA.nodes.map(n => ({data: {id: n.id, label: n.title, status: n.status, pillar: n.pillar, kind: n.kind, main: isMain(n) ? 1 : 0}})),
     ...DATA.nodes.flatMap(n => (n.depends_on || []).map(d => ({data: {id: d + '>' + n.id, source: d, target: n.id}}))),
   ],
   style: [
@@ -54,6 +58,7 @@ const cy = cytoscape({
       'text-wrap': 'wrap', 'text-max-width': 150, 'font-size': 11, 'text-valign': 'center', color: css('--txt'),
       'background-color': n => css(COL[n.data('status')])}},
     {selector: 'node[kind = "goal"]', style: {'border-width': 3, 'border-color': css('--fg'), 'font-weight': 'bold'}},
+    {selector: 'node[main = 1][kind = "goal"]', style: {'font-size': 14, padding: '12px', 'border-width': 4}},
     {selector: 'edge', style: {width: 1.5, 'line-color': css('--line'), 'target-arrow-color': css('--line'), 'target-arrow-shape': 'triangle', 'curve-style': 'bezier'}},
     {selector: '.dim', style: {opacity: 0.15}},
     {selector: 'node:selected', style: {'border-width': 3, 'border-color': css('--fg')}},
