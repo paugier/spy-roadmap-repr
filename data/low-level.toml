@@ -1,0 +1,100 @@
+# Pillar: Low-level features. One [table] per node, the table name is the node id.
+# Long description (optional): data/descriptions/<id>.md
+# Source: the SPy book page "Low-level features SPy still needs" and its page on fixed-size arrays.
+# All spellings (InlineArray, @noalias, ll_union...) are proposals.
+
+title = "Low-level features"
+order = 4
+
+[low-level-programming]
+title = "Low-level programming in SPy"
+kind = "goal"
+status = "planned"
+summary = "Northern star of this pillar: SPy is expressive enough to write numerical kernels, binary-format parsers and wrappers around C libraries, with the control a C programmer expects."
+depends_on = ["inline-array", "noalias", "layout-control", "unions", "bit-ops", "small-numeric-types", "span", "raw-free"]
+
+[inline-array]
+title = "Fixed-size arrays (InlineArray)"
+kind = "feature"
+status = "idea"
+summary = "Small vectors and matrices (a 3D position, a 3x3 tensor) stored directly inside structs and stack frames, with a length known at compile time."
+depends_on = ["gc-ref"]
+
+[noalias]
+title = "Non-aliasing pointers (@noalias)"
+kind = "feature"
+status = "idea"
+summary = "A decorator promising that some pointer parameters never overlap, so the C compiler can optimize and vectorize loops."
+
+[layout-control]
+title = "Layout control (packed, align, offsetof)"
+kind = "feature"
+status = "idea"
+summary = "Choose how struct fields are laid out in memory, for binary file formats, network headers and cache-line alignment."
+depends_on = ["c-portability", "calc-layout-c-rules", "layout-agree-check", "sizeof-alignof-types", "ptr-size-platform"]
+
+[unions]
+title = "Unions (ll_union) and tagged unions"
+kind = "feature"
+status = "idea"
+summary = "Types whose fields share the same bytes: the building block of variants (sum types)."
+
+[bit-ops]
+title = "Bit-level operations"
+kind = "feature"
+status = "idea"
+summary = "Read the bits of a float as an integer, and count or rotate bits, each in one CPU instruction."
+depends_on = ["c-portability"]
+
+[small-numeric-types]
+title = "Smaller numeric types (i16, u16, f16, bf16)"
+kind = "feature"
+status = "idea"
+summary = "16-bit integers and half-precision floats, to read audio and image formats and to store large arrays in less memory."
+
+[span]
+title = "Slices that keep their length (span)"
+kind = "feature"
+status = "planned"
+summary = "A pointer plus a length in every build mode, like a Rust slice, to pass a range of an array to a function."
+
+[raw-free]
+title = "Releasing raw memory (raw_free and with)"
+kind = "feature"
+status = "planned"
+summary = "Free manually allocated memory, and guarantee it is released when a block is left."
+depends_on = ["with-ctx"]
+
+[c-portability]
+title = "C11 and portability macros for generated C"
+kind = "task"
+status = "idea"
+summary = "Move the generated C to C11 and hide every compiler-specific extension behind macros of one libspy header."
+
+[calc-layout-c-rules]
+title = "calc_layout follows the C layout rules"
+kind = "task"
+status = "in-progress"
+summary = "Field offsets and struct sizes computed by the compiler follow the same alignment rules as C."
+links = [
+  "https://github.com/spylang/spy/pull/749",
+]
+
+[layout-agree-check]
+title = "Check that the interpreter and C layouts agree"
+kind = "problem"
+status = "idea"
+summary = "Nothing verifies that the layout computed by SPy equals the one the C compiler picks, so a mismatch silently corrupts memory."
+depends_on = ["c-portability"]
+
+[sizeof-alignof-types]
+title = "sizeof and alignof for every type"
+kind = "bug"
+status = "idea"
+summary = "sizeof and alignof only know a fixed list of types, and give a wrong alignment for complex128."
+
+[ptr-size-platform]
+title = "Size of a pointer depends on the target"
+kind = "problem"
+status = "idea"
+summary = "sizeof assumes the same pointer size everywhere, but it differs between wasm32, native 64-bit and release builds."

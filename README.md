@@ -70,8 +70,20 @@ The pillar of a node is the file it lives in. To add a pillar, add a new `data/<
 ### Long descriptions
 
 For anything longer than the summary, create `data/descriptions/<node-id>.md`. It is
-rendered as Markdown (fenced code and tables included) in the side panel, under the
-summary. The build fails if a file name does not match a node id.
+rendered in the side panel, under the summary. The build fails if a file name does not
+match a node id.
+
+The dialect is [Python-Markdown](https://python-markdown.github.io/) with three
+extensions: fenced code blocks, tables and admonitions. It is **not** MyST, so when
+reusing text from MyST notes convert these constructs:
+
+| MyST | Here |
+| --- | --- |
+| `:::{admonition} Definition: x` ... `:::` | `!!! note "Definition: x"` followed by the body indented by 4 spaces |
+| ``{ref}`label` `` | `[text](node:<node-id>)`, a link that opens another node in the panel (the build rejects unknown ids) |
+| `(label)=` anchors, `{ref}` to pages | plain text: pages of the SPy book are not linked |
+
+Lists need a blank line before them.
 
 Conventions:
 
@@ -110,6 +122,8 @@ There is no framework and no bundler. Keep it that way unless the page outgrows 
 ## Sources of the data
 
 - `ROADMAP.md` in the SPy repo (version of 2026-04-17) seeded the first 44 nodes.
+- The SPy book pages "Low-level features SPy still needs" and "Fixed-size arrays" gave the
+  "Low-level features" pillar (proposals, so most nodes are `idea`).
 - SPy issues and pull requests provide the links and the done status.
 
 ## Possible next steps

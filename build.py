@@ -8,8 +8,10 @@ Data layout:
   data/<pillar>.toml          one file per pillar; top-level `title` and `order`,
                               then one [node-id] table per node
   data/descriptions/<id>.md   optional long description of a node, in Markdown
+                              (Python-Markdown: fenced code, tables, `!!! note "Title"`
+                              admonitions, and `[text](node:<id>)` links to other nodes)
 """
-import json, sys, tomllib
+import json, re, sys, tomllib
 from pathlib import Path
 import markdown
 
@@ -58,8 +60,15 @@ def attach_descriptions(nodes, errors):
     for n in nodes:
         path = folder / f"{n['id']}.md"
         if path.exists():
-            n["description_html"] = markdown.markdown(
-                path.read_text(encoding="utf-8"), extensions=["fenced_code", "tables"])
+            html = markdown.markdown(
+                path.read_text(encoding="utf-8"), extensions=["fenced_code", "tables", "admonition"])
+
+            def node_link(m):
+                if m["id"] not in ids:
+                    errors.append(f"descriptions/{path.name}: link to unknown node {m['id']}")
+                return f'href="#" data-node="{m["id"]}"'
+
+            n["description_html"] = re.sub(r'href="node:(?P<id>[^"]+)"', node_link, html)
 
 
 def validate(nodes):

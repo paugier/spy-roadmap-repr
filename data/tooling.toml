@@ -2,7 +2,7 @@
 # Long description (optional): data/descriptions/<id>.md
 
 title = "Documentation and tooling"
-order = 6
+order = 7
 
 [cli-subcommands]
 title = "CLI with subcommands"

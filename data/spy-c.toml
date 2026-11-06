@@ -2,7 +2,7 @@
 # Long description (optional): data/descriptions/<id>.md
 
 title = "SPy/C integration"
-order = 4
+order = 5
 
 [libs-from-c]
 title = "posix, socket and sqlite wrapping C libraries"

@@ -2,7 +2,7 @@
 # Long description (optional): data/descriptions/<id>.md
 
 title = "SPy/Python integration"
-order = 5
+order = 6
 
 [python-interop]
 title = "Full SPy/Python interop"
