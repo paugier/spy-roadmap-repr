@@ -1,0 +1,26 @@
+# Pillar: SPy/Python integration. One [table] per node, the table name is the node id.
+# Long description (optional): data/descriptions/<id>.md
+
+title = "SPy/Python integration"
+order = 5
+
+[python-interop]
+title = "Full SPy/Python interop"
+kind = "goal"
+status = "planned"
+summary = "SPy can import Python modules and be imported from Python. SPy then becomes a better Cython."
+depends_on = ["c-integration", "refcounting"]
+
+[py-cffi]
+title = "py-cffi output kind"
+kind = "feature"
+status = "done"
+when = "2025-Q2"
+summary = "Compile SPy to C, wrap with cffi and import in CPython, for scalars and arrays."
+
+[array-memoryview]
+title = "array <-> memoryview / numpy conversion"
+kind = "feature"
+status = "planned"
+summary = "Automatic conversion between SPy arrays and numpy arrays."
+depends_on = ["py-cffi", "array-improve"]

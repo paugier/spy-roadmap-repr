@@ -1,0 +1,19 @@
+# Pillar: SPy/C integration. One [table] per node, the table name is the node id.
+# Long description (optional): data/descriptions/<id>.md
+
+title = "SPy/C integration"
+order = 4
+
+[libs-from-c]
+title = "posix, socket and sqlite wrapping C libraries"
+kind = "goal"
+status = "planned"
+summary = "Northern star of SPy/C integration: standard-library modules implemented by wrapping existing C libraries."
+depends_on = ["c-integration"]
+
+[c-integration]
+title = "SPy/C integration (FFI)"
+kind = "feature"
+status = "in-progress"
+when = "2026-Q2"
+summary = "Generic way to call C libraries from SPy, in both interpreter and compiler. Related work: Zig's @cImport."

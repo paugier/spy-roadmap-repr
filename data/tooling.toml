@@ -1,0 +1,48 @@
+# Pillar: Documentation and tooling. One [table] per node, the table name is the node id.
+# Long description (optional): data/descriptions/<id>.md
+
+title = "Documentation and tooling"
+order = 6
+
+[cli-subcommands]
+title = "CLI with subcommands"
+kind = "task"
+status = "done"
+when = "2026-Q1"
+summary = "spy build, spy run... instead of flags."
+links = [
+  "https://github.com/spylang/spy/pull/332",
+]
+
+[docs]
+title = "Docs skeleton, automation, mkdocs-material"
+kind = "task"
+status = "done"
+when = "2026-Q1"
+summary = "Documentation site and its build."
+links = [
+  "https://github.com/spylang/spy/pull/349",
+  "https://github.com/spylang/spy/pull/372",
+]
+
+[html-ast]
+title = "HTML backend for AST visualization"
+kind = "task"
+status = "done"
+when = "2026-Q1"
+summary = "Look at the syntax tree in a browser."
+links = [
+  "https://github.com/spylang/spy/pull/413",
+  "https://github.com/spylang/spy/pull/414",
+  "https://github.com/spylang/spy/pull/424",
+]
+
+[playground-share]
+title = "Playground: share button and snippet links"
+kind = "task"
+status = "done"
+when = "2026-Q1"
+summary = "Share code from the browser playground."
+links = [
+  "https://github.com/spylang/spy/pull/427",
+]

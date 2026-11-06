@@ -17,13 +17,14 @@ main{flex:1;display:flex;min-height:0}
 aside{width:300px;padding:12px;background:var(--panel);overflow:auto;border-left:1px solid var(--line)}
 aside h2{font-size:16px;margin:0 0 4px}aside .mut{color:var(--mut);font-size:13px}
 aside a{color:inherit}aside ul{padding-left:18px}
+.desc{border-top:1px solid var(--line);margin:8px 0;font-size:14px}.desc pre{overflow:auto;background:var(--bg);padding:6px}.desc code{font-size:13px}.desc h1,.desc h2,.desc h3{font-size:15px;margin:10px 0 4px}
 .prog{height:8px;background:var(--idea);border-radius:4px;margin:6px 0}.prog div{height:100%;background:var(--done);border-radius:4px}
 @media(max-width:700px){main{flex-direction:column}aside{width:auto;max-height:35vh;border-left:0;border-top:1px solid var(--line)}}
 </style></head><body>
 <header><h1>SPy roadmap</h1>
 <label>Pillar <select id="pillar"><option value="">all</option></select></label>
 <label>Path to goal <select id="goal"><option value="">none</option></select></label>
-<label><input type="checkbox" id="hidedone"> hide done</label>
+<label><input type="checkbox" id="hidedone" checked> hide done</label>
 <span class="legend" id="legend"></span></header>
 <main><div id="cy"></div><aside id="panel"><p class="mut">Click a node. Arrows go from a prerequisite to what it unlocks.</p></aside></main>
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
@@ -33,11 +34,12 @@ aside a{color:inherit}aside ul{padding-left:18px}
 const DATA = __DATA__;
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const COL = {done:'--done','in-progress':'--wip',planned:'--planned',idea:'--idea',blocked:'--blocked'};
+const pillarTitle = Object.fromEntries(DATA.pillars.map(p => [p.id, p.title]));
 const byId = Object.fromEntries(DATA.nodes.map(n => [n.id, n]));
 const el = (tag, text, attrs={}) => { const e = document.createElement(tag); if (text) e.textContent = text; Object.assign(e, attrs); return e; };
 
 for (const s in COL) { const sp = el('span', s); sp.style.background = css(COL[s]); legend.append(sp); }
-[...new Set(DATA.nodes.map(n => n.pillar))].forEach(p => pillar.append(el('option', p, {value: p})));
+DATA.pillars.forEach(p => pillar.append(el('option', p.title, {value: p.id})));
 DATA.nodes.filter(n => n.kind === 'goal').forEach(n => goal.append(el('option', n.title, {value: n.id})));
 
 const cy = cytoscape({
@@ -78,7 +80,8 @@ function progress(id) {
 }
 cy.on('tap', 'node', e => {
   const n = byId[e.target.id()], p = document.getElementById('panel');
-  p.replaceChildren(el('h2', n.title), el('div', `${n.kind} · ${n.status} · ${n.pillar}${n.when ? ' · ' + n.when : ''}`, {className: 'mut'}), el('p', n.summary));
+  p.replaceChildren(el('h2', n.title), el('div', `${n.kind} · ${n.status} · ${pillarTitle[n.pillar]}${n.when ? ' · ' + n.when : ''}`, {className: 'mut'}), el('p', n.summary));
+  if (n.description_html) { const d = el('div', '', {className: 'desc'}); d.innerHTML = n.description_html; p.append(d); }
   const pr = progress(n.id);
   if (pr) { p.append(el('div', `${pr[0]} of ${pr[1]} prerequisites done`, {className: 'mut'}));
     const bar = el('div', '', {className: 'prog'}); const fill = el('div'); fill.style.width = (100 * pr[0] / pr[1]) + '%'; bar.append(fill); p.append(bar); }

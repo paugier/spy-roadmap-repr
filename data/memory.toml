@@ -1,0 +1,53 @@
+# Pillar: Memory management. One [table] per node, the table name is the node id.
+# Long description (optional): data/descriptions/<id>.md
+
+title = "Memory management"
+order = 3
+
+[ptr-kinds]
+title = "Pointer kinds (object, unbounded and bounded array)"
+kind = "feature"
+status = "planned"
+summary = "Distinguish the three pointer kinds, similar to Rust slices."
+
+[refcounting]
+title = "Reference counting"
+kind = "feature"
+status = "planned"
+summary = "Plain refcounting in pure SPy; with Python interop it maps to Py_IncRef/Py_DecRef and CPython's GC."
+
+[whippet]
+title = "Experiment with Whippet GC"
+kind = "feature"
+status = "idea"
+summary = "Try an alternative garbage collector."
+
+[gc-alloc]
+title = "gc_alloc vs raw_malloc"
+kind = "feature"
+status = "done"
+when = "2026-Q1"
+summary = "Separate garbage-collected and manual allocation."
+links = [
+  "https://github.com/spylang/spy/pull/371",
+  "https://github.com/spylang/spy/pull/383",
+]
+
+[gc-ref]
+title = "gc_ref and raw_ref"
+kind = "feature"
+status = "done"
+when = "2026-Q1"
+summary = "Typed references for each allocation kind."
+depends_on = ["gc-alloc"]
+
+[boehm]
+title = "Boehm GC support"
+kind = "feature"
+status = "done"
+when = "2026-Q1"
+summary = "Automatic memory management through the Boehm collector."
+depends_on = ["gc-alloc"]
+links = [
+  "https://github.com/spylang/spy/pull/383",
+]

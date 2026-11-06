@@ -1,0 +1,170 @@
+# Pillar: Core language. One [table] per node, the table name is the node id.
+# Long description (optional): data/descriptions/<id>.md
+
+title = "Core language"
+order = 1
+
+[interp-in-spy]
+title = "SPy interpreter written in SPy"
+kind = "goal"
+status = "planned"
+summary = "The northern star of the core language: SPy becomes expressive enough to implement its own interpreter."
+depends_on = ["heap-classes", "class-modifiers", "try-catch", "with-ctx", "str-bytes"]
+
+[blue-args]
+title = "Blue-time *args and **kwargs"
+kind = "feature"
+status = "planned"
+when = "2026-Q2"
+summary = "Variable numbers of arguments handled at compile time (blue time)."
+
+[print-varargs]
+title = "print() with variable arguments"
+kind = "feature"
+status = "planned"
+when = "2026-Q2"
+summary = "Needs some macro-like functionality."
+
+[fstrings]
+title = "f-strings"
+kind = "feature"
+status = "planned"
+when = "2026-Q2"
+summary = "Formatted string literals."
+
+[class-modifiers]
+title = "Metaprogramming for class modifiers (dataclasses...)"
+kind = "feature"
+status = "planned"
+summary = "Enough compile-time metaprogramming to implement things like dataclasses in SPy itself."
+
+[live-image]
+title = "Serialize the live image after redshifting"
+kind = "feature"
+status = "planned"
+summary = "Save the state of the program after the compile-time phase (redshifting)."
+
+[heap-classes]
+title = "Heap-allocated classes"
+kind = "feature"
+status = "planned"
+summary = "Classes whose instances live on the heap and are accessed by reference."
+depends_on = ["gc-ref"]
+
+[with-ctx]
+title = "with and context managers"
+kind = "feature"
+status = "planned"
+summary = "Support for the with statement."
+
+[try-catch]
+title = "try/except"
+kind = "feature"
+status = "planned"
+summary = "Today every raise becomes a panic that stops the program."
+
+[dict-literals]
+title = "dict literals"
+kind = "feature"
+status = "done"
+when = "2026-Q1"
+summary = "Write {k: v} directly in SPy code."
+links = [
+  "https://github.com/spylang/spy/issues/342",
+]
+
+[cli-args]
+title = "CLI arguments"
+kind = "feature"
+status = "done"
+when = "2026-Q1"
+summary = "SPy programs can read command-line arguments."
+links = [
+  "https://github.com/spylang/spy/issues/353",
+]
+
+[tuple]
+title = "Compile-time friendly tuple"
+kind = "feature"
+status = "done"
+when = "2026-Q1"
+summary = "Tuples usable in compile-time computations."
+links = [
+  "https://github.com/spylang/spy/pull/402",
+]
+
+[is-op]
+title = "is and is not"
+kind = "feature"
+status = "done"
+when = "2026-Q1"
+summary = "Identity comparison operators."
+links = [
+  "https://github.com/spylang/spy/pull/428",
+]
+
+[pep695]
+title = "PEP 695 syntax for generic functions"
+kind = "feature"
+status = "done"
+when = "2026-Q1"
+summary = "Python 3.12 generic syntax as sugar for blue generic functions."
+links = [
+  "https://github.com/spylang/spy/pull/437",
+]
+
+[default-args]
+title = "Default arguments"
+kind = "feature"
+status = "done"
+when = "2026-Q1"
+summary = "Functions can have default argument values."
+links = [
+  "https://github.com/spylang/spy/pull/442",
+]
+
+[f32-complex]
+title = "f32 and complex types"
+kind = "feature"
+status = "done"
+when = "2026-Q1"
+summary = "Single-precision floats and complex numbers."
+links = [
+  "https://github.com/spylang/spy/pull/347",
+  "https://github.com/spylang/spy/pull/398",
+]
+
+[debugging]
+title = "Better debugging (tracebacks, breakpoint)"
+kind = "feature"
+status = "done"
+when = "2025-Q4"
+summary = "SPy-level tracebacks and breakpoint()."
+
+[list-literals]
+title = "list literals"
+kind = "feature"
+status = "done"
+when = "2025-Q4"
+summary = "Write [a, b, c] directly in SPy code."
+
+[for-loops]
+title = "for loops, range, iterator protocol"
+kind = "feature"
+status = "done"
+when = "2025-Q3"
+summary = "Iteration over ranges and user-defined iterators."
+
+[dunder-meta]
+title = "__dunder__ methods and metafunctions"
+kind = "feature"
+status = "done"
+when = "2025-Q3"
+summary = "Refactored operator protocol, plus blue-time descriptors."
+
+[errors-checks]
+title = "Better error messages and blue/red checks"
+kind = "feature"
+status = "done"
+when = "2025-Q3"
+summary = "Proper messages instead of assertion errors; error when a blue function gets red arguments."

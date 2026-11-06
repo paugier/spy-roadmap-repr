@@ -1,35 +1,83 @@
 # /// script
-# requires-python = ">=3.10"
-# dependencies = ["pyyaml"]
+# requires-python = ">=3.11"
+# dependencies = ["markdown"]
 # ///
-"""Validate data/nodes.yaml and build site/index.html (run: uv run build.py)."""
-import json, sys
+"""Validate data/*.toml and build site/index.html (run: uv run build.py).
+
+Data layout:
+  data/<pillar>.toml          one file per pillar; top-level `title` and `order`,
+                              then one [node-id] table per node
+  data/descriptions/<id>.md   optional long description of a node, in Markdown
+"""
+import json, sys, tomllib
 from pathlib import Path
-import yaml
+import markdown
 
 ROOT = Path(__file__).parent
+DATA = ROOT / "data"
 KINDS = {"goal", "feature", "task", "problem", "bug"}
 STATUSES = {"idea", "planned", "in-progress", "done", "blocked"}
-REQUIRED = {"id", "title", "kind", "status", "pillar", "summary"}
+REQUIRED = {"title", "kind", "status", "summary"}
+OPTIONAL = {"when", "depends_on", "links"}
+PILLAR_KEYS = {"title", "order"}
+
+
+def load():
+    """Return (pillars, nodes, errors). The pillar of a node is its file name."""
+    pillars, nodes, errors, seen = [], [], [], {}
+    for path in sorted(DATA.glob("*.toml")):
+        pillar = path.stem
+        try:
+            raw = tomllib.loads(path.read_text(encoding="utf-8"))
+        except tomllib.TOMLDecodeError as e:
+            errors.append(f"{path.name}: {e}")
+            continue
+        pillars.append({"id": pillar, "title": raw.get("title", pillar), "order": raw.get("order", 100)})
+        for key in raw.keys() & PILLAR_KEYS:
+            raw.pop(key)
+        for nid, fields in raw.items():
+            if not isinstance(fields, dict):
+                errors.append(f"{path.name}: unexpected top-level key {nid!r} (nodes are [tables])")
+                continue
+            if nid in seen:
+                errors.append(f"duplicate id {nid} ({seen[nid]} and {path.name})")
+            seen[nid] = path.name
+            nodes.append({"id": nid, "pillar": pillar, **fields})
+    pillars.sort(key=lambda p: (p["order"], p["id"]))
+    return pillars, nodes, errors
+
+
+def attach_descriptions(nodes, errors):
+    ids = {n["id"] for n in nodes}
+    folder = DATA / "descriptions"
+    for path in sorted(folder.glob("*.md")):
+        if path.stem == "README":
+            continue
+        if path.stem not in ids:
+            errors.append(f"descriptions/{path.name}: no node with id {path.stem}")
+    for n in nodes:
+        path = folder / f"{n['id']}.md"
+        if path.exists():
+            n["description_html"] = markdown.markdown(
+                path.read_text(encoding="utf-8"), extensions=["fenced_code", "tables"])
 
 
 def validate(nodes):
-    errors, ids = [], set()
+    errors, ids = [], {n["id"] for n in nodes}
     for n in nodes:
+        i = n["id"]
         missing = REQUIRED - n.keys()
         if missing:
-            errors.append(f"{n.get('id', n)}: missing {sorted(missing)}")
-            continue
-        if n["id"] in ids:
-            errors.append(f"duplicate id {n['id']}")
-        ids.add(n["id"])
-        if n["kind"] not in KINDS:
-            errors.append(f"{n['id']}: bad kind {n['kind']}")
-        if n["status"] not in STATUSES:
-            errors.append(f"{n['id']}: bad status {n['status']}")
-    deps = {n["id"]: n.get("depends_on", []) for n in nodes if "id" in n}
-    for i, ds in deps.items():
-        errors += [f"{i}: unknown dependency {d}" for d in ds if d not in ids]
+            errors.append(f"{i}: missing {sorted(missing)}")
+        unknown = n.keys() - REQUIRED - OPTIONAL - {"id", "pillar", "description_html"}
+        if unknown:
+            errors.append(f"{i}: unknown field(s) {sorted(unknown)}")
+        if n.get("kind") not in KINDS:
+            errors.append(f"{i}: bad kind {n.get('kind')}")
+        if n.get("status") not in STATUSES:
+            errors.append(f"{i}: bad status {n.get('status')}")
+        errors += [f"{i}: unknown dependency {d}" for d in n.get("depends_on", []) if d not in ids]
+    deps = {n["id"]: n.get("depends_on", []) for n in nodes}
     state = {}
 
     def visit(i, path):
@@ -48,16 +96,17 @@ def validate(nodes):
 
 
 def main():
-    nodes = yaml.safe_load((ROOT / "data" / "nodes.yaml").read_text())
-    errors = validate(nodes)
+    pillars, nodes, errors = load()
+    attach_descriptions(nodes, errors)
+    errors += validate(nodes)
     if errors:
         sys.exit("\n".join(errors))
-    payload = json.dumps({"nodes": nodes}, ensure_ascii=False).replace("</", "<\\/")
+    payload = json.dumps({"pillars": pillars, "nodes": nodes}, ensure_ascii=False).replace("</", "<\\/")
     html = (ROOT / "site_src" / "index.html").read_text().replace("__DATA__", payload)
     out = ROOT / "site"
     out.mkdir(exist_ok=True)
     (out / "index.html").write_text(html)
-    print(f"{len(nodes)} nodes -> site/index.html")
+    print(f"{len(nodes)} nodes in {len(pillars)} pillars -> site/index.html")
 
 
 if __name__ == "__main__":

@@ -2,4 +2,7 @@ build:
 	uv run build.py
 
 serve:
-	python -m http.server -d site
+	uv run python -m http.server -d site
+
+clean:
+	rm -rf site

@@ -1,0 +1,68 @@
+# Pillar: Standard library. One [table] per node, the table name is the node id.
+# Long description (optional): data/descriptions/<id>.md
+
+title = "Standard library"
+order = 2
+
+[str-bytes]
+title = "str and bytes in pure SPy"
+kind = "feature"
+status = "planned"
+when = "2026-Q2"
+summary = "Rewrite the core string types in SPy rather than in the runtime."
+
+[socket]
+title = "socket support"
+kind = "feature"
+status = "planned"
+summary = "Network sockets."
+depends_on = ["c-integration"]
+
+[full-io]
+title = "Full I/O without ad-hoc builtins"
+kind = "feature"
+status = "planned"
+summary = "Replace special-case builtins with the general C-call mechanism."
+depends_on = ["c-integration", "file-io"]
+
+[more-stdlib]
+title = "datetime, argparse, json"
+kind = "feature"
+status = "planned"
+summary = "More standard-library modules."
+
+[array-improve]
+title = "Improve array"
+kind = "feature"
+status = "planned"
+summary = "array is a proof of concept for now, and very limited."
+depends_on = ["stdlib-foundations"]
+
+[stdlib-foundations]
+title = "stdlib directory, list, dict, array"
+kind = "feature"
+status = "done"
+when = "2025-Q3"
+summary = "SPy modules importable from stdlib/, with first list, dict and array."
+
+[file-io]
+title = "Preliminary file I/O and file object"
+kind = "feature"
+status = "done"
+when = "2026-Q1"
+summary = "Read and write files."
+links = [
+  "https://github.com/spylang/spy/pull/447",
+]
+
+[builtin-types]
+title = "Slices, str.replace, builtin type improvements"
+kind = "feature"
+status = "done"
+when = "2026-Q1"
+summary = "More complete builtin types."
+links = [
+  "https://github.com/spylang/spy/pull/345",
+  "https://github.com/spylang/spy/pull/394",
+  "https://github.com/spylang/spy/pull/460",
+]

@@ -2,8 +2,8 @@
 
 A small static website that shows how the pieces of [SPy](https://github.com/spylang/spy)
 (a new pythonic language) fit together: goals, features, tasks, and what depends on
-what. The data lives in one YAML file; the page is generated from it and deployed to
-GitHub Pages.
+what. The data lives in TOML files (one per pillar) plus optional Markdown descriptions; the
+page is generated from them and deployed to GitHub Pages.
 
 Site: <https://paugier.github.io/spy-roadmap-repr/>
 
@@ -14,18 +14,19 @@ plain-language summary.
 ## Quick start
 
 ```sh
-uv run build.py        # validates data/nodes.yaml, writes site/index.html
-python -m http.server -d site   # then open http://localhost:8000
+uv run build.py        # validates data/, writes site/index.html
+uv run python -m http.server -d site   # then open http://localhost:8000
 ```
 
-`build.py` declares its only dependency (`pyyaml`) inline, so `uv` needs no setup. It
+`build.py` declares its only dependency (`markdown`) inline, so `uv` needs no setup. It
 exits with a non-zero status and a list of problems if the data is invalid.
 
 ## Layout
 
 | Path | Role |
 | --- | --- |
-| `data/nodes.yaml` | The single source of truth: one node per line. Edit this file to change the site. |
+| `data/<pillar>.toml` | One file per pillar (file name = pillar id). One `[node-id]` table per node. |
+| `data/descriptions/<id>.md` | Optional long description of a node, in Markdown. |
 | `build.py` | Validates the data, injects it as JSON into the template, writes `site/index.html`. |
 | `site_src/index.html` | Page template (HTML, CSS and JS in one file). `__DATA__` is replaced by the JSON. |
 | `.github/workflows/pages.yml` | On every push to `main`: `uv run build.py`, then deploy `site/` to GitHub Pages. |
@@ -33,27 +34,44 @@ exits with a non-zero status and a list of problems if the data is invalid.
 
 ## Data model
 
-Each entry of `data/nodes.yaml` is one node:
+Each pillar is a TOML file. The top-level `title` and `order` describe the pillar; each
+`[table]` below is a node, and the table name is the node id:
 
-```yaml
-- {id: heap-classes, title: Heap-allocated classes, kind: feature, status: planned,
-   pillar: core, when: 2026-Q2, depends_on: [gc-ref],
-   links: [https://github.com/spylang/spy/pull/383],
-   summary: "Classes whose instances live on the heap and are accessed by reference."}
+```toml
+# data/core.toml
+title = "Core language"
+order = 1
+
+[heap-classes]
+title = "Heap-allocated classes"
+kind = "feature"
+status = "planned"
+when = "2026-Q2"
+summary = "Classes whose instances live on the heap and are accessed by reference."
+depends_on = ["gc-ref"]   # ids can live in any pillar file
+links = [
+  "https://github.com/spylang/spy/pull/383",
+]
 ```
 
 | Field | Required | Values / meaning |
 | --- | --- | --- |
-| `id` | yes | Unique kebab-case slug. |
+| table name | yes | Unique kebab-case id, used in `depends_on`. |
 | `title` | yes | Short label shown in the graph. |
 | `kind` | yes | `goal`, `feature`, `task`, `problem`, `bug`. |
 | `status` | yes | `idea`, `planned`, `in-progress`, `done`, `blocked`. |
-| `pillar` | yes | `core`, `stdlib`, `memory`, `spy-c`, `spy-python`, `tooling`. |
 | `summary` | yes | One or two sentences a reader without compiler background can follow. |
-| `when` | no | Quarter such as `2026-Q2`. |
+| `when` | no | Quarter such as `"2026-Q2"` (a string). |
 | `depends_on` | no | Ids of prerequisites. |
 | `links` | no | PR and issue URLs. |
-| `notes` | no | Reserved for a link to the matching technical note (not rendered yet). |
+
+The pillar of a node is the file it lives in. To add a pillar, add a new `data/<id>.toml`.
+
+### Long descriptions
+
+For anything longer than the summary, create `data/descriptions/<node-id>.md`. It is
+rendered as Markdown (fenced code and tables included) in the side panel, under the
+summary. The build fails if a file name does not match a node id.
 
 Conventions:
 
@@ -62,10 +80,11 @@ Conventions:
   in the sources or clear from the design, never to make the graph look connected.
 - An edge goes from the prerequisite to what it unlocks, so the layout reads left to
   right from foundations to goals.
-- Keep nodes on one line and entries grouped by pillar, so diffs stay small.
+- Within a file, put goals first, then nodes in the order you want to read them.
 
-`build.py` rejects missing required fields, unknown `kind`/`status`, duplicate ids,
-dependencies on unknown ids, and dependency cycles.
+`build.py` rejects TOML syntax errors, missing required fields, unknown fields, unknown
+`kind`/`status`, duplicate ids, dependencies on unknown ids, description files without a
+node, and dependency cycles.
 
 ## The page
 
@@ -73,16 +92,16 @@ dependencies on unknown ids, and dependency cycles.
 layout, loaded from jsDelivr at pinned versions. Node colors follow `status` (CSS
 variables, light and dark theme).
 
-- Filters: pillar, hide done.
+- Filters: pillar, hide done (checked by default).
 - "Path to goal": dims everything that is not upstream of the chosen goal.
-- Clicking a node opens a side panel: summary, share of prerequisites done, "Needs" and
+- Clicking a node opens a side panel: summary, long description, share of prerequisites done, "Needs" and
   "Unlocks" lists (clickable), links.
 
 There is no framework and no bundler. Keep it that way unless the page outgrows one file.
 
 ## Working on this repo
 
-- Change data: edit `data/nodes.yaml`, run `uv run build.py`, check the graph in a browser.
+- Change data: edit `data/<pillar>.toml` or `data/descriptions/<id>.md`, run `uv run build.py`, check the graph in a browser.
 - Change the page: edit `site_src/index.html`; do not edit `site/`.
 - The page loads scripts only from jsDelivr, so a browser with network access is needed to
   test it. The build step alone cannot catch JavaScript errors.
@@ -95,7 +114,7 @@ There is no framework and no bundler. Keep it that way unless the page outgrows 
 
 ## Possible next steps
 
-- Per-node pages with the design explanation, linked to the technical notes (`notes`).
+- Per-node pages with the design explanation, linked to the technical notes.
 - Timeline view: pillars as rows, quarters as columns.
 - A script that updates `status` of nodes with linked PRs through the GitHub API.
 - Generate `ROADMAP.md` from the data, so the flat file cannot drift.
