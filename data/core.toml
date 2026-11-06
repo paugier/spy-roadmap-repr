@@ -21,14 +21,14 @@ summary = "Variable numbers of arguments handled at compile time (blue time)."
 [print-varargs]
 title = "print() with variable arguments"
 kind = "feature"
-status = "planned"
+status = "done"
 when = "2026-Q2"
 summary = "Needs some macro-like functionality."
 
 [fstrings]
 title = "f-strings"
 kind = "feature"
-status = "planned"
+status = "done"
 when = "2026-Q2"
 summary = "Formatted string literals."
 
