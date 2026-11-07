@@ -37,7 +37,7 @@ title = "Better language"
 kind = "goal"
 status = "planned"
 summary = "Language features that go beyond Python: protocols, variants (sum types), compile-time metaprogramming."
-contributors = ["class-modifiers", "protocols", "variants", "blue-args"]
+contributors = ["class-modifiers", "protocols", "variants", "blue-args", "advanced-metaprog"]
 
 [blue-args]
 title = "Blue-time *args and **kwargs"
@@ -45,6 +45,29 @@ kind = "feature"
 status = "planned"
 when = "2026-Q2"
 summary = "Variable numbers of arguments handled at compile time (blue time)."
+
+[advanced-metaprog]
+title = "Advanced metaprogramming (tuple splicing)"
+kind = "feature"
+status = "idea"
+summary = "Generate specialized code from a compile-time-known number of arguments: unrolled loops and spreading of tuples into calls and tuple types. It is the tool behind helpers such as vectorize, benchmark and partial."
+blockers = ["unroll-for", "star-splice"]
+
+[unroll-for]
+title = "Unrolled for loops (unroll_range)"
+kind = "feature"
+status = "done"
+when = "2026-Q4"
+summary = "A for loop over unroll_range(n), with n known at compile time, is copied n times instead of running as a loop."
+links = [
+  "https://github.com/spylang/spy/pull/754",
+]
+
+[star-splice]
+title = "Starred arguments and args_m.types"
+kind = "feature"
+status = "idea"
+summary = "Spread a tuple into a call, a tuple or a tuple type with *, including at compile time, and read the types of the arguments of a metafunction. The spelling is a proposal."
 
 [print-varargs]
 title = "print() with variable arguments"

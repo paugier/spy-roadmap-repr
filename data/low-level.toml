@@ -11,7 +11,7 @@ title = "Perf compiled code"
 kind = "goal"
 status = "planned"
 summary = "Compiled SPy programs run as fast as the C a careful programmer would write."
-contributors = ["low-level-programming", "whippet"]
+contributors = ["low-level-programming", "explicit-vectorization", "whippet"]
 
 [low-level-programming]
 title = "Low-level programming in SPy"
@@ -71,6 +71,71 @@ kind = "feature"
 status = "planned"
 summary = "Free manually allocated memory, and guarantee it is released when a block is left."
 blockers = ["with-ctx"]
+
+[explicit-vectorization]
+title = "Explicit vectorization (SIMD)"
+kind = "feature"
+status = "in-progress"
+summary = "Write numerical kernels with SIMD vectors, which process several numbers per CPU instruction, and run the same kernel on the best vector width of the target machine."
+blockers = ["simd-type", "simd-ops", "simd-reductions", "simd-conversions", "simd-width", "simd-march"]
+contributors = ["vectorize"]
+
+[vectorize]
+title = "vectorize: scalar kernel to SIMD loop"
+kind = "feature"
+status = "idea"
+summary = "A helper that turns a function written for one number into a loop over vectors, with a scalar loop for the remaining elements. The spelling is a proposal."
+blockers = ["advanced-metaprog"]
+
+[simd-type]
+title = "SIMD type"
+kind = "task"
+status = "done"
+when = "2026-Q4"
+summary = "SIMD[T, N], a vector of N numbers of type T, loaded and stored by indexing a pointer to SIMD[T, N]."
+links = [
+  "https://github.com/spylang/spy/pull/734",
+]
+
+[simd-ops]
+title = "SIMD arithmetic, comparison, select, iota and element-wise functions"
+kind = "task"
+status = "in-progress"
+summary = "Operators, comparisons, selection by mask and the sequence 0, 1, 2... on SIMD vectors, then min, max, abs, clamp and sqrt."
+links = [
+  "https://github.com/spylang/spy/pull/742",
+  "https://github.com/spylang/spy/pull/743",
+]
+
+[simd-reductions]
+title = "SIMD reductions and predicates"
+kind = "task"
+status = "planned"
+summary = "Combine the lanes of a vector into one value (sum, min, max, product) and test whether any or all lanes satisfy a condition."
+
+[simd-conversions]
+title = "SIMD conversions and float helpers"
+kind = "task"
+status = "planned"
+summary = "Reinterpret the bytes of a vector as another type, convert its numbers (f32 to i32), round, and scale by a power of two."
+
+[simd-width]
+title = "Vector width of the target (simd_width_of, --simd-width)"
+kind = "task"
+status = "in-progress"
+summary = "Choose the number of lanes from the width of the vector registers, with a command-line option to override it."
+links = [
+  "https://github.com/spylang/spy/pull/746",
+]
+
+[simd-march]
+title = "Target CPU option (--march) and libspy rebuild"
+kind = "task"
+status = "in-progress"
+summary = "Compile for a given CPU instruction set. The runtime library libspy is rebuilt for the same target, because it is optimized together with the generated code."
+links = [
+  "https://github.com/spylang/spy/pull/745",
+]
 
 [c-portability]
 title = "C11 and portability macros for generated C"
