@@ -7,8 +7,10 @@ Site: <https://paugier.github.io/spy-roadmap-repr/>
 
 SPy's own `ROADMAP.md` is a flat, hard-to-read text. Here the same information is a graph
 that a newcomer can explore. Click a node to read a plain-language summary, a longer
-explanation, what it needs, what it unlocks and the related pull requests. "Path to goal"
-dims everything that is not a prerequisite of the chosen goal.
+explanation, what it needs, what it unlocks and the related pull requests. You can show
+one or several pillars, and focus on one or more nodes to see only the path to them (or
+what they unlock), or to just highlight them. The view is stored in the URL, so it can be
+shared.
 
 ## Build the site locally
 

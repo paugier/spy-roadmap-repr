@@ -79,11 +79,11 @@ and tooling (7).
 
 ### Conventions
 
-- `goal` nodes are the "northern stars"; the "Path to goal" selector lists them. A goal
+- `goal` nodes are the "northern stars"; the Focus menu lists them first. A goal
   may depend on other goals: a main goal (nothing depends on it, drawn bigger, e.g.
   "Faster interpreter", "Python-like stdlib", "Full SPy/Python interop") sits on top
   of the goals of the pillars that lead to it (e.g. "SPy interpreter written in SPy").
-  The selector groups them as main and intermediate goals, computed from the
+  The menu groups them as main and intermediate goals, computed from the
   dependencies; there is no field for it.
 - A dependency means "cannot be finished or used without". Add one only when the sources
   state it or the design makes it clear, never to make the graph look connected.
@@ -137,10 +137,21 @@ Style, following the book notes the descriptions come from:
 the dagre layout, loaded from jsDelivr at pinned versions (keep exact versions).
 
 - Node colors follow `status` (CSS variables, light and dark theme).
-- Filters: pillar, hide done (checked by default). "Path to goal" dims what is not
-  upstream of the chosen goal.
-- Clicking a node opens the side panel: summary, long description, share of prerequisites
-  done, "Needs" and "Unlocks" lists (clickable), links.
+- Selection of what is shown (state in the `state` object, mirrored in the URL hash as
+  `#p=<pillars>&f=<focus nodes>&s=<scope>&o=<others>&d=0`, so a view can be shared):
+  - **Pillars**: one checkbox per pillar (several can be shown), with `all` / `none`.
+  - **Hide done** (checked by default).
+  - **Focus**: any set of nodes (goal or not), added from the "+ add a node" menu, from the
+    side-panel buttons, or removed with the chips. **Show** says what is kept around each
+    focus node: what it needs (path to it, the default), what it unlocks, both, or the
+    node only. **Other nodes** are hidden (default), dimmed, or left unchanged; with
+    dimmed or unchanged, the focus set is highlighted (accent underlay), which gives
+    "highlight only".
+  - A node is shown if its pillar is chosen, it is not hidden as done, and (focus active
+    and others hidden) it is in the focus set. Focus nodes themselves are always shown.
+- Clicking a node opens the side panel: summary, focus buttons (path to it, what it
+  unlocks, highlight only, add to / remove from focus), long description, share of
+  prerequisites done, "Needs" and "Unlocks" lists (clickable), links.
 - Links `[text](node:id)` in descriptions become `<a href="#" data-node="id">` in
   `build.py`, and the page selects the target node on click.
 - CSS is written in a few long lines; when editing it with a script, make sure a newline

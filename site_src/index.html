@@ -4,13 +4,18 @@
 <title>SPy roadmap</title>
 <style>
 :root{color-scheme:light dark;--bg:#fff;--fg:#1d2226;--mut:#667;--line:#bbc;--panel:#f4f5f8;
---done:#4caf7a;--wip:#f2b134;--planned:#7aa7e0;--idea:#c9c9d3;--blocked:#e0605e;--txt:#111}
+--done:#4caf7a;--wip:#f2b134;--planned:#7aa7e0;--idea:#c9c9d3;--blocked:#e0605e;--txt:#111;--accent:#c2255c}
 @media(prefers-color-scheme:dark){:root{--bg:#161a1d;--fg:#e6e8ea;--mut:#9aa;--line:#556;--panel:#222831;
---done:#2f7d55;--wip:#a8791b;--planned:#3f68a0;--idea:#4a4a58;--blocked:#9b3c3b;--txt:#f2f2f2}}
+--done:#2f7d55;--wip:#a8791b;--planned:#3f68a0;--idea:#4a4a58;--blocked:#9b3c3b;--txt:#f2f2f2;--accent:#f06595}}
 body{margin:0;font:15px system-ui,sans-serif;background:var(--bg);color:var(--fg);display:flex;flex-direction:column;height:100vh}
 header{padding:8px 12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;border-bottom:1px solid var(--line)}
 h1{font-size:18px;margin:0 8px 0 0}
-select,label{font:inherit;color:inherit}select{background:var(--panel);border:1px solid var(--line);padding:3px}
+select,label{font:inherit;color:inherit}select{background:var(--panel);border:1px solid var(--line);padding:3px}select:disabled{opacity:.5}
+.bar{padding:6px 12px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;border-bottom:1px solid var(--line);font-size:14px}.grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.grp>b{font-weight:600}
+.pill,.chip{border:1px solid var(--line);border-radius:12px;padding:1px 8px;white-space:nowrap}.pill:has(input:checked){border-color:var(--fg);background:var(--panel)}
+.chip{border-color:var(--accent)}.chip button{border:0;background:none;color:inherit;cursor:pointer;font:inherit;padding:0 0 0 2px}
+button.lnk{border:0;background:none;color:var(--mut);cursor:pointer;font:inherit;font-size:13px;text-decoration:underline;padding:0}
+.acts{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}.acts button{font:inherit;font-size:12px;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:2px 6px;cursor:pointer}
 .legend span{display:inline-block;padding:1px 8px;margin-right:4px;border-radius:9px;color:var(--txt);font-size:12px}
 main{flex:1;display:flex;min-height:0}
 #cy{flex:1;min-width:0}
@@ -22,33 +27,92 @@ aside a{color:inherit}aside ul{padding-left:18px}
 .prog{height:8px;background:var(--idea);border-radius:4px;margin:6px 0}.prog div{height:100%;background:var(--done);border-radius:4px}
 @media(max-width:700px){main{flex-direction:column}aside{width:auto;max-height:35vh;border-left:0;border-top:1px solid var(--line)}}
 </style></head><body>
-<header><h1>SPy roadmap</h1>
-<label>Pillar <select id="pillar"><option value="">all</option></select></label>
-<label>Path to goal <select id="goal"><option value="">none</option></select></label>
+<header><h1>SPy roadmap</h1><span class="legend" id="legend"></span><span class="mut" id="count"></span></header>
+<div class="bar">
+<div class="grp"><b>Pillars</b><span class="grp" id="pillars"></span><button type="button" class="lnk" id="pall">all</button><button type="button" class="lnk" id="pnone">none</button></div>
 <label><input type="checkbox" id="hidedone" checked> hide done</label>
-<span class="legend" id="legend"></span></header>
+</div>
+<div class="bar">
+<div class="grp"><b>Focus</b><select id="add"><option value="">+ add a node…</option></select><span class="grp" id="chips"></span><button type="button" class="lnk" id="fclear">clear</button></div>
+<label>show <select id="scope"><option value="up">what it needs (path to it)</option><option value="down">what it unlocks</option><option value="both">needs and unlocks</option><option value="node">the node only</option></select></label>
+<label>other nodes <select id="others"><option value="hide">hidden</option><option value="dim">dimmed</option><option value="keep">unchanged</option></select></label>
+</div>
 <main><div id="cy"></div><aside id="panel"><p class="mut">Click a node. Arrows go from a prerequisite to what it unlocks.</p></aside></main>
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dagre@0.8.5/dist/dagre.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
 <script>
 const DATA = __DATA__;
+const $ = id => document.getElementById(id);
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const COL = {done:'--done','in-progress':'--wip',planned:'--planned',idea:'--idea',blocked:'--blocked'};
 const pillarTitle = Object.fromEntries(DATA.pillars.map(p => [p.id, p.title]));
+const pillarIds = DATA.pillars.map(p => p.id);
 const byId = Object.fromEntries(DATA.nodes.map(n => [n.id, n]));
 const el = (tag, text, attrs={}) => { const e = document.createElement(tag); if (text) e.textContent = text; Object.assign(e, attrs); return e; };
 
-for (const s in COL) { const sp = el('span', s); sp.style.background = css(COL[s]); legend.append(sp); }
-DATA.pillars.forEach(p => pillar.append(el('option', p.title, {value: p.id})));
+for (const s in COL) { const sp = el('span', s); sp.style.background = css(COL[s]); $('legend').append(sp); }
 const goals = DATA.nodes.filter(n => n.kind === 'goal');
 const isMain = n => !goals.some(g => (g.depends_on || []).includes(n.id));
-[['Main goals', goals.filter(isMain)], ['Intermediate goals', goals.filter(n => !isMain(n))]].forEach(([label, list]) => {
-  if (!list.length) return;
-  const g = el('optgroup', '', {label}); list.forEach(n => g.append(el('option', n.title, {value: n.id}))); goal.append(g); });
 
+// ---- state (mirrored in the URL hash, so a view can be shared) ----
+const SCOPES = ['up', 'down', 'both', 'node'], OTHERS = ['hide', 'dim', 'keep'];
+const state = {};
+function resetState() { Object.assign(state, {pillars: new Set(pillarIds), focus: [], scope: 'up', others: 'hide', hidedone: true}); }
+function loadHash() {
+  resetState();
+  const q = new URLSearchParams(location.hash.slice(1));
+  if (q.has('p')) state.pillars = new Set(q.get('p').split(',').filter(x => pillarIds.includes(x)));
+  if (q.has('f')) state.focus = q.get('f').split(',').filter(x => byId[x]);
+  if (SCOPES.includes(q.get('s'))) state.scope = q.get('s');
+  if (OTHERS.includes(q.get('o'))) state.others = q.get('o');
+  if (q.get('d') === '0') state.hidedone = false;
+}
+function saveHash() {
+  const parts = [];
+  if (state.pillars.size !== pillarIds.length) parts.push('p=' + pillarIds.filter(x => state.pillars.has(x)).join(','));
+  if (state.focus.length) parts.push('f=' + state.focus.join(','));
+  if (state.scope !== 'up') parts.push('s=' + state.scope);
+  if (state.others !== 'hide') parts.push('o=' + state.others);
+  if (!state.hidedone) parts.push('d=0');
+  history.replaceState(null, '', parts.length ? '#' + parts.join('&') : location.pathname + location.search);
+}
+
+// ---- controls ----
+DATA.pillars.forEach(p => {
+  const l = el('label', '', {className: 'pill'}), c = el('input', '', {type: 'checkbox', value: p.id});
+  l.append(c, ' ' + p.title); $('pillars').append(l);
+  c.addEventListener('change', () => { c.checked ? state.pillars.add(p.id) : state.pillars.delete(p.id); refresh(); });
+});
+$('pall').onclick = () => { state.pillars = new Set(pillarIds); refresh(); };
+$('pnone').onclick = () => { state.pillars = new Set(); refresh(); };
+$('hidedone').onchange = e => { state.hidedone = e.target.checked; refresh(); };
+
+[['Main goals', goals.filter(isMain)], ['Intermediate goals', goals.filter(n => !isMain(n))],
+ ...DATA.pillars.map(p => [p.title, DATA.nodes.filter(n => n.pillar === p.id && n.kind !== 'goal')])].forEach(([label, list]) => {
+  if (!list.length) return;
+  const g = el('optgroup', '', {label}); list.forEach(n => g.append(el('option', n.title, {value: n.id}))); $('add').append(g); });
+$('add').onchange = e => { const id = e.target.value; e.target.value = ''; if (id && !state.focus.includes(id)) { state.focus.push(id); refresh(); } };
+$('scope').onchange = e => { state.scope = e.target.value; refresh(); };
+$('others').onchange = e => { state.others = e.target.value; refresh(); };
+$('fclear').onclick = () => { state.focus = []; refresh(); };
+window.addEventListener('hashchange', () => { loadHash(); refresh(false); });
+
+function syncControls() {
+  $('pillars').querySelectorAll('input').forEach(c => c.checked = state.pillars.has(c.value));
+  $('hidedone').checked = state.hidedone;
+  $('scope').value = state.scope; $('others').value = state.others;
+  $('scope').disabled = $('others').disabled = $('fclear').hidden = !state.focus.length;
+  const box = $('chips'); box.replaceChildren();
+  state.focus.forEach(id => {
+    const c = el('span', '', {className: 'chip'}), b = el('button', '×', {type: 'button', title: 'Remove from focus'});
+    b.onclick = () => { state.focus = state.focus.filter(x => x !== id); refresh(); };
+    c.append(byId[id].title + ' ', b); box.append(c); });
+}
+
+// ---- graph ----
 const cy = cytoscape({
-  container: document.getElementById('cy'),
+  container: $('cy'),
   elements: [
     ...DATA.nodes.map(n => ({data: {id: n.id, label: n.title, status: n.status, pillar: n.pillar, kind: n.kind, main: isMain(n) ? 1 : 0}})),
     ...DATA.nodes.flatMap(n => (n.depends_on || []).map(d => ({data: {id: d + '>' + n.id, source: d, target: n.id}}))),
@@ -62,31 +126,61 @@ const cy = cytoscape({
     {selector: 'edge', style: {width: 1.5, 'line-color': css('--line'), 'target-arrow-color': css('--line'), 'target-arrow-shape': 'triangle', 'curve-style': 'bezier'}},
     {selector: '.dim', style: {opacity: 0.15}},
     {selector: 'node:selected', style: {'border-width': 3, 'border-color': css('--fg')}},
+    {selector: 'node.hl', style: {'underlay-color': css('--accent'), 'underlay-opacity': 0.35, 'underlay-padding': 5}},
+    {selector: 'edge.hl', style: {width: 3, 'line-color': css('--accent'), 'target-arrow-color': css('--accent')}},
+    {selector: 'node.root', style: {'border-width': 4, 'border-color': css('--accent')}},
   ],
 });
 
-function layout() { cy.layout({name: 'dagre', rankDir: 'LR', nodeSep: 14, rankSep: 70, animate: false}).run(); cy.fit(undefined, 20); }
-function refresh() {
-  cy.nodes().forEach(n => {
-    const hide = (pillar.value && n.data('pillar') !== pillar.value) || (hidedone.checked && n.data('status') === 'done');
-    n.style('display', hide ? 'none' : 'element');
-  });
-  cy.elements().removeClass('dim');
-  if (goal.value) {
-    const g = cy.getElementById(goal.value), up = g.union(g.predecessors());
-    cy.elements().not(up).addClass('dim');
-  }
-  layout();
+function layout() {
+  const vis = cy.elements(':visible');
+  if (vis.empty()) return;
+  vis.layout({name: 'dagre', rankDir: 'LR', nodeSep: 14, rankSep: 70, animate: false}).run(); cy.fit(vis, 20);
 }
-[pillar, goal, hidedone].forEach(c => c.addEventListener('change', refresh));
+// Nodes shown = (pillar chosen and not hidden as done) and, when "other nodes" is hidden, in the focus set.
+// The focus nodes themselves are always shown: they were chosen explicitly.
+function refresh(save = true) {
+  const active = state.focus.length > 0;
+  const roots = cy.nodes().filter(n => state.focus.includes(n.id()));
+  let fs = cy.collection();
+  if (active) roots.forEach(n => {
+    fs = fs.union(n);
+    if (state.scope === 'up' || state.scope === 'both') fs = fs.union(n.predecessors());
+    if (state.scope === 'down' || state.scope === 'both') fs = fs.union(n.successors());
+  });
+  cy.batch(() => {
+    cy.elements().removeClass('dim hl root');
+    cy.nodes().forEach(n => {
+      let show = state.pillars.has(n.data('pillar')) && !(state.hidedone && n.data('status') === 'done');
+      if (active && state.others === 'hide' && !fs.contains(n)) show = false;
+      if (roots.contains(n)) show = true;
+      n.style('display', show ? 'element' : 'none');
+    });
+    if (active) {
+      if (state.others === 'dim') cy.elements().not(fs).addClass('dim');
+      if (state.others !== 'hide') fs.addClass('hl');
+      roots.addClass('root');
+    }
+  });
+  $('count').textContent = `${cy.nodes(':visible').length} of ${DATA.nodes.length} nodes shown`;
+  syncControls(); layout(); if (save) saveHash();
+}
 
 function progress(id) {
   const ups = cy.getElementById(id).predecessors().nodes();
   return ups.length ? [ups.filter('[status = "done"]').length, ups.length] : null;
 }
 cy.on('tap', 'node', e => {
-  const n = byId[e.target.id()], p = document.getElementById('panel');
+  const n = byId[e.target.id()], p = $('panel');
   p.replaceChildren(el('h2', n.title), el('div', `${n.kind} · ${n.status} · ${pillarTitle[n.pillar]}${n.when ? ' · ' + n.when : ''}`, {className: 'mut'}), el('p', n.summary));
+  const acts = el('div', '', {className: 'acts'});
+  const act = (label, fn) => acts.append(el('button', label, {type: 'button', onclick: () => { fn(); refresh(); e.target.emit('tap'); }}));
+  act('Path to this node', () => { state.focus = [n.id]; state.scope = 'up'; state.others = 'hide'; });
+  act('What it unlocks', () => { state.focus = [n.id]; state.scope = 'down'; state.others = 'hide'; });
+  act('Highlight only', () => { state.focus = [n.id]; state.scope = 'both'; state.others = 'keep'; });
+  if (state.focus.includes(n.id)) act('Remove from focus', () => { state.focus = state.focus.filter(x => x !== n.id); });
+  else act('Add to focus', () => { state.focus.push(n.id); });
+  p.append(acts);
   if (n.description_html) { const d = el('div', '', {className: 'desc'}); d.innerHTML = n.description_html;
     d.querySelectorAll('a[data-node]').forEach(a => a.onclick = ev => { ev.preventDefault(); const m = cy.getElementById(a.dataset.node); if (m.empty()) return; cy.$(':selected').unselect(); m.select(); m.emit('tap'); });
     p.append(d); }
@@ -100,5 +194,6 @@ cy.on('tap', 'node', e => {
   if (n.links && n.links.length) { p.append(el('strong', 'Links')); const ul = el('ul');
     n.links.forEach(u => { const li = el('li'); li.append(el('a', u.replace('https://github.com/spylang/spy/', ''), {href: u, target: '_blank', rel: 'noopener'})); ul.append(li); }); p.append(ul); }
 });
-refresh();
+loadHash();
+refresh(false);
 </script></body></html>
