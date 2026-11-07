@@ -10,3 +10,18 @@ kind = "feature"
 status = "in-progress"
 when = "2026-Q2"
 summary = "Generic way to call C libraries from SPy, in both interpreter and compiler. Related work: Zig's @cImport."
+blockers = ["extern"]
+contributors = ["out-of-tree-modules"]
+
+[out-of-tree-modules]
+title = "Out-of-tree builtin modules"
+kind = "feature"
+status = "done"
+summary = "Wrap a C library in a Python package outside the SPy source tree. It works today, but each function needs hand-written glue code: a stopgap until a direct mechanism exists."
+
+[extern]
+title = "Declare C functions (@extern)"
+kind = "feature"
+status = "idea"
+summary = "Declare a C function in SPy with a decorator and call it directly, without glue code. The spelling @extern is a proposal."
+contributors = ["function-types", "layout-agree-check"]

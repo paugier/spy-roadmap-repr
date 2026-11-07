@@ -79,6 +79,12 @@ status = "idea"
 summary = "A value that is one of several alternatives, each with its own fields, checked by the compiler."
 blockers = ["unions"]
 
+[function-types]
+title = "Function types and function values (Callable)"
+kind = "feature"
+status = "idea"
+summary = "Pass a function as an argument and call it at run time, for example a comparison function given to a sort. The spelling Callable[[i32, i32], i32] is a proposal."
+
 [live-image]
 title = "Serialize the live image after redshifting"
 kind = "feature"
