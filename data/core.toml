@@ -23,7 +23,7 @@ title = "Self-hosting: compile the SPy CLI"
 kind = "goal"
 status = "idea"
 summary = "The spy command-line tool, written in Python, is compiled by SPy too: the whole toolchain runs without CPython."
-blockers = ["selfhost-interp", "python-like-core", "cli-lib", "posix-wrapped"]
+blockers = ["selfhost-interp", "python-like-core", "cli-lib", "mod-posix"]
 
 [python-subset]
 title = "Compile a large subset of Python"

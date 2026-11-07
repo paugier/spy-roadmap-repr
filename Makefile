@@ -1,7 +1,7 @@
 build:
 	uv run build.py
 
-serve:
+serve: build
 	uv run python -m http.server -d site
 
 clean:

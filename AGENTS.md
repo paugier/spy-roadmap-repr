@@ -85,7 +85,7 @@ and tooling (7).
 Both fields list prerequisites, and an id may not appear in both.
 
 - A **blocker** is something this node "cannot be finished or used without". Example:
-  `posix-wrapped` is blocked by `c-integration`.
+  `mod-posix` is blocked by `c-integration`.
 - A **contributor** brings this node closer to its purpose but is not required for it.
   Example: `protocols` contributes to the goal `better-language` without blocking it.
   Goals that gather many features (`low-level-programming`, `python-like-stdlib`...)
@@ -115,6 +115,11 @@ block.
 - Status: `done` only for merged work; a feature that is only a proposal is `idea`; one
   that the SPy roadmap already lists is `planned`. Check the PR before choosing
   `in-progress` or `done`.
+- Each standard-library module is its own node in the Standard library pillar, with the id
+  `mod-<name>`, and contributes to the goal `python-like-stdlib`. Keep the list short: only the
+  most useful modules that make sense for SPy. A module that wraps a C library has
+  `c-integration` as a blocker; a module that needs another module (`mod-pathlib` needs
+  `mod-posix`) lists it as a blocker.
 - `problem` and `bug` nodes are limited to those that block a feature: list them in its
   `blockers`.
 

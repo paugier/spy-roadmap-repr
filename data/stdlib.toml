@@ -36,8 +36,8 @@ summary = "A library to declare command-line tools (arguments, options, subcomma
 title = "Python-like stdlib"
 kind = "goal"
 status = "planned"
-summary = "The standard-library modules a Python user expects (datetime, argparse, json, socket, posix, sqlite...) are available in SPy."
-contributors = ["python-like-core", "socket", "posix-wrapped", "sqlite-wrapped", "more-stdlib"]
+summary = "The few standard-library modules that matter most to a Python user (math, json, argparse, datetime, posix, socket, sqlite3...) are available in SPy, with the API they know."
+contributors = ["python-like-core", "mod-random", "mod-math", "mod-time", "mod-collections", "mod-json", "mod-argparse", "mod-datetime", "mod-re", "mod-pathlib", "mod-subprocess", "mod-posix", "mod-socket", "mod-sqlite3"]
 
 [str-bytes]
 title = "str and bytes in pure SPy"
@@ -46,27 +46,6 @@ status = "planned"
 when = "2026-Q2"
 summary = "Rewrite the core string types in SPy rather than in the runtime."
 
-[socket]
-title = "socket wrapped"
-kind = "feature"
-status = "planned"
-summary = "A socket module that wraps the C network functions."
-blockers = ["c-integration"]
-
-[posix-wrapped]
-title = "posix wrapped"
-kind = "feature"
-status = "planned"
-summary = "A posix module that wraps the C system functions (files, processes, environment)."
-blockers = ["c-integration"]
-
-[sqlite-wrapped]
-title = "sqlite wrapped"
-kind = "feature"
-status = "planned"
-summary = "A sqlite module that wraps the SQLite C library."
-blockers = ["c-integration"]
-
 [full-io]
 title = "Full I/O without ad-hoc builtins"
 kind = "feature"
@@ -74,11 +53,92 @@ status = "planned"
 summary = "Replace special-case builtins with the general C-call mechanism."
 blockers = ["c-integration", "file-io"]
 
-[more-stdlib]
-title = "datetime, argparse, json"
+# One node per standard-library module. Each contributes to python-like-stdlib.
+# Only a short list of the most useful modules that make sense for SPy.
+# Modules that wrap a C library are blocked by c-integration.
+
+[mod-random]
+title = "random"
+kind = "feature"
+status = "in-progress"
+summary = "Random numbers written in SPy. The module exists but is still very minimal (seed, random, uniform...)."
+
+[mod-math]
+title = "math"
+kind = "feature"
+status = "in-progress"
+summary = "Mathematical functions. A first set exists (sqrt, sin, cos, exp, log, pow, floor...); many functions and constants are still missing."
+
+[mod-time]
+title = "time"
+kind = "feature"
+status = "in-progress"
+summary = "Clock and delays. Only time() and sleep() exist for now."
+
+[mod-collections]
+title = "collections"
+kind = "feature"
+status = "idea"
+summary = "Containers beyond list and dict, such as deque, Counter and defaultdict, written in SPy."
+
+[mod-json]
+title = "json"
 kind = "feature"
 status = "planned"
-summary = "More standard-library modules."
+summary = "Read and write JSON text. Pure SPy, so it needs no C library."
+
+[mod-argparse]
+title = "argparse"
+kind = "feature"
+status = "planned"
+summary = "Parse command-line arguments with the argparse API. Pure SPy, so it needs no C library."
+
+[mod-datetime]
+title = "datetime"
+kind = "feature"
+status = "planned"
+summary = "Dates, times and durations with the datetime API."
+
+[mod-re]
+title = "re"
+kind = "feature"
+status = "idea"
+summary = "Regular expressions. Whether to write the engine in SPy or wrap a C library is still open."
+
+[mod-pathlib]
+title = "pathlib"
+kind = "feature"
+status = "idea"
+summary = "Object-oriented file paths. It needs the system calls of posix to read directories and file information."
+blockers = ["mod-posix"]
+
+[mod-posix]
+title = "posix"
+kind = "feature"
+status = "planned"
+summary = "A posix module that wraps the C system functions (files, processes, environment)."
+blockers = ["c-integration"]
+
+[mod-subprocess]
+title = "subprocess"
+kind = "feature"
+status = "idea"
+summary = "Start other programs and talk to them through pipes. It needs the process system calls of posix."
+blockers = ["mod-posix"]
+
+[mod-socket]
+title = "socket"
+kind = "feature"
+status = "planned"
+summary = "A socket module that wraps the C network functions."
+blockers = ["c-integration"]
+
+[mod-sqlite3]
+title = "sqlite3"
+kind = "feature"
+status = "planned"
+summary = "A sqlite3 module that wraps the SQLite C library."
+blockers = ["c-integration"]
 
 [array-improve]
 title = "Improve array"
