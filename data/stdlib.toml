@@ -9,21 +9,22 @@ title = "NumSPy"
 kind = "goal"
 status = "in-progress"
 summary = "An implementation of the Python array API standard written in SPy: numpy-like arrays that compile to fast code."
-depends_on = ["array-improve", "low-level-programming"]
+blockers = ["array-improve"]
+contributors = ["low-level-programming"]
 
 [python-like-lib]
 title = "Python-like lib"
 kind = "goal"
 status = "planned"
 summary = "Third-party libraries with the API a Python user knows (NumSPy for arrays, a Typer/click-like library for command lines...) exist in SPy."
-depends_on = ["numspy", "cli-lib"]
+contributors = ["numspy", "cli-lib"]
 
 [python-like-core]
 title = "Python-like core"
 kind = "goal"
 status = "planned"
 summary = "The core types and functions a Python user expects (str, bytes, list, dict, array, file I/O) are in SPy and behave as in Python."
-depends_on = ["str-bytes", "array-improve", "full-io"]
+contributors = ["str-bytes", "array-improve", "full-io"]
 
 [cli-lib]
 title = "Typer/click-like CLI library"
@@ -36,7 +37,7 @@ title = "Python-like stdlib"
 kind = "goal"
 status = "planned"
 summary = "The standard-library modules a Python user expects (datetime, argparse, json, socket, posix, sqlite...) are available in SPy."
-depends_on = ["python-like-core", "socket", "posix-wrapped", "sqlite-wrapped", "more-stdlib"]
+contributors = ["python-like-core", "socket", "posix-wrapped", "sqlite-wrapped", "more-stdlib"]
 
 [str-bytes]
 title = "str and bytes in pure SPy"
@@ -50,28 +51,28 @@ title = "socket wrapped"
 kind = "feature"
 status = "planned"
 summary = "A socket module that wraps the C network functions."
-depends_on = ["c-integration"]
+blockers = ["c-integration"]
 
 [posix-wrapped]
 title = "posix wrapped"
 kind = "feature"
 status = "planned"
 summary = "A posix module that wraps the C system functions (files, processes, environment)."
-depends_on = ["c-integration"]
+blockers = ["c-integration"]
 
 [sqlite-wrapped]
 title = "sqlite wrapped"
 kind = "feature"
 status = "planned"
 summary = "A sqlite module that wraps the SQLite C library."
-depends_on = ["c-integration"]
+blockers = ["c-integration"]
 
 [full-io]
 title = "Full I/O without ad-hoc builtins"
 kind = "feature"
 status = "planned"
 summary = "Replace special-case builtins with the general C-call mechanism."
-depends_on = ["c-integration", "file-io"]
+blockers = ["c-integration", "file-io"]
 
 [more-stdlib]
 title = "datetime, argparse, json"
@@ -84,7 +85,7 @@ title = "Improve array"
 kind = "feature"
 status = "planned"
 summary = "array is a proof of concept for now, and very limited."
-depends_on = ["stdlib-foundations"]
+blockers = ["stdlib-foundations"]
 
 [stdlib-foundations]
 title = "stdlib directory, list, dict, array"

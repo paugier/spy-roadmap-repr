@@ -16,7 +16,7 @@ select,label{font:inherit;color:inherit}select{background:var(--panel);border:1p
 .chip{border-color:var(--accent)}.chip button{border:0;background:none;color:inherit;cursor:pointer;font:inherit;padding:0 0 0 2px}
 button.lnk{border:0;background:none;color:var(--mut);cursor:pointer;font:inherit;font-size:13px;text-decoration:underline;padding:0}
 .acts{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}.acts button{font:inherit;font-size:12px;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:2px 6px;cursor:pointer}
-.legend span{display:inline-block;padding:1px 8px;margin-right:4px;border-radius:9px;color:var(--txt);font-size:12px}
+.legend span{display:inline-block;padding:1px 8px;margin-right:4px;border-radius:9px;color:var(--txt);font-size:12px}.legend .edge{color:var(--mut);padding:0;margin-left:8px;font-size:12px}
 main{flex:1;display:flex;min-height:0}
 #cy{flex:1;min-width:0}
 aside{width:300px;padding:12px;background:var(--panel);overflow:auto;border-left:1px solid var(--line)}
@@ -31,6 +31,7 @@ aside a{color:inherit}aside ul{padding-left:18px}
 <div class="bar">
 <div class="grp"><b>Pillars</b><span class="grp" id="pillars"></span><button type="button" class="lnk" id="pall">all</button><button type="button" class="lnk" id="pnone">none</button></div>
 <label><input type="checkbox" id="hidedone" checked> hide done</label>
+<label><input type="checkbox" id="hideideas"> hide ideas</label>
 </div>
 <div class="bar">
 <div class="grp"><b>Focus</b><select id="add"><option value="">+ add a node…</option></select><span class="grp" id="chips"></span><button type="button" class="lnk" id="fclear">clear</button></div>
@@ -49,16 +50,21 @@ const COL = {done:'--done','in-progress':'--wip',planned:'--planned',idea:'--ide
 const pillarTitle = Object.fromEntries(DATA.pillars.map(p => [p.id, p.title]));
 const pillarIds = DATA.pillars.map(p => p.id);
 const byId = Object.fromEntries(DATA.nodes.map(n => [n.id, n]));
+const prereqs = n => [...(n.blockers || []), ...(n.contributors || [])];
+// "blocked" is derived, not stored: a planned or in-progress node with at least one unfinished blocker.
+DATA.nodes.forEach(n => { n.shown = n.status;
+  if ((n.status === 'planned' || n.status === 'in-progress') && (n.blockers || []).some(b => byId[b].status !== 'done')) n.shown = 'blocked'; });
 const el = (tag, text, attrs={}) => { const e = document.createElement(tag); if (text) e.textContent = text; Object.assign(e, attrs); return e; };
 
 for (const s in COL) { const sp = el('span', s); sp.style.background = css(COL[s]); $('legend').append(sp); }
+$('legend').append(el('span', '→ blocks   ⇢ contributes to', {className: 'edge'}));
 const goals = DATA.nodes.filter(n => n.kind === 'goal');
-const isMain = n => !goals.some(g => (g.depends_on || []).includes(n.id));
+const isMain = n => !goals.some(g => prereqs(g).includes(n.id));
 
 // ---- state (mirrored in the URL hash, so a view can be shared) ----
 const SCOPES = ['up', 'down', 'both', 'node'], OTHERS = ['hide', 'dim', 'keep'];
 const state = {};
-function resetState() { Object.assign(state, {pillars: new Set(pillarIds), focus: [], scope: 'up', others: 'hide', hidedone: true}); }
+function resetState() { Object.assign(state, {pillars: new Set(pillarIds), focus: [], scope: 'up', others: 'hide', hidedone: true, hideideas: false}); }
 function loadHash() {
   resetState();
   const q = new URLSearchParams(location.hash.slice(1));
@@ -67,6 +73,7 @@ function loadHash() {
   if (SCOPES.includes(q.get('s'))) state.scope = q.get('s');
   if (OTHERS.includes(q.get('o'))) state.others = q.get('o');
   if (q.get('d') === '0') state.hidedone = false;
+  if (q.get('i') === '1') state.hideideas = true;
 }
 function saveHash() {
   const parts = [];
@@ -75,6 +82,7 @@ function saveHash() {
   if (state.scope !== 'up') parts.push('s=' + state.scope);
   if (state.others !== 'hide') parts.push('o=' + state.others);
   if (!state.hidedone) parts.push('d=0');
+  if (state.hideideas) parts.push('i=1');
   history.replaceState(null, '', parts.length ? '#' + parts.join('&') : location.pathname + location.search);
 }
 
@@ -87,6 +95,7 @@ DATA.pillars.forEach(p => {
 $('pall').onclick = () => { state.pillars = new Set(pillarIds); refresh(); };
 $('pnone').onclick = () => { state.pillars = new Set(); refresh(); };
 $('hidedone').onchange = e => { state.hidedone = e.target.checked; refresh(); };
+$('hideideas').onchange = e => { state.hideideas = e.target.checked; refresh(); };
 
 [['Main goals', goals.filter(isMain)], ['Intermediate goals', goals.filter(n => !isMain(n))],
  ...DATA.pillars.map(p => [p.title, DATA.nodes.filter(n => n.pillar === p.id && n.kind !== 'goal')])].forEach(([label, list]) => {
@@ -101,6 +110,7 @@ window.addEventListener('hashchange', () => { loadHash(); refresh(false); });
 function syncControls() {
   $('pillars').querySelectorAll('input').forEach(c => c.checked = state.pillars.has(c.value));
   $('hidedone').checked = state.hidedone;
+  $('hideideas').checked = state.hideideas;
   $('scope').value = state.scope; $('others').value = state.others;
   $('scope').disabled = $('others').disabled = $('fclear').hidden = !state.focus.length;
   const box = $('chips'); box.replaceChildren();
@@ -114,8 +124,9 @@ function syncControls() {
 const cy = cytoscape({
   container: $('cy'),
   elements: [
-    ...DATA.nodes.map(n => ({data: {id: n.id, label: n.title, status: n.status, pillar: n.pillar, kind: n.kind, main: isMain(n) ? 1 : 0}})),
-    ...DATA.nodes.flatMap(n => (n.depends_on || []).map(d => ({data: {id: d + '>' + n.id, source: d, target: n.id}}))),
+    ...DATA.nodes.map(n => ({data: {id: n.id, label: n.title, status: n.shown, pillar: n.pillar, kind: n.kind, main: isMain(n) ? 1 : 0}})),
+    ...DATA.nodes.flatMap(n => [...(n.blockers || []).map(d => ['blocks', d]), ...(n.contributors || []).map(d => ['contrib', d])]
+      .map(([kind, d]) => ({data: {id: d + '>' + n.id, source: d, target: n.id, kind}}))),
   ],
   style: [
     {selector: 'node', style: {label: 'data(label)', shape: 'round-rectangle', width: 'label', height: 'label', padding: '8px',
@@ -124,6 +135,7 @@ const cy = cytoscape({
     {selector: 'node[kind = "goal"]', style: {'border-width': 3, 'border-color': css('--fg'), 'font-weight': 'bold'}},
     {selector: 'node[main = 1][kind = "goal"]', style: {'font-size': 14, padding: '12px', 'border-width': 4}},
     {selector: 'edge', style: {width: 1.5, 'line-color': css('--line'), 'target-arrow-color': css('--line'), 'target-arrow-shape': 'triangle', 'curve-style': 'bezier'}},
+    {selector: 'edge[kind = "contrib"]', style: {'line-style': 'dashed', 'line-dash-pattern': [6, 4], width: 1.2}},
     {selector: '.dim', style: {opacity: 0.15}},
     {selector: 'node:selected', style: {'border-width': 3, 'border-color': css('--fg')}},
     {selector: 'node.hl', style: {'underlay-color': css('--accent'), 'underlay-opacity': 0.35, 'underlay-padding': 5}},
@@ -151,7 +163,7 @@ function refresh(save = true) {
   cy.batch(() => {
     cy.elements().removeClass('dim hl root');
     cy.nodes().forEach(n => {
-      let show = state.pillars.has(n.data('pillar')) && !(state.hidedone && n.data('status') === 'done');
+      let show = state.pillars.has(n.data('pillar')) && !(state.hidedone && n.data('status') === 'done') && !(state.hideideas && n.data('status') === 'idea');
       if (active && state.others === 'hide' && !fs.contains(n)) show = false;
       if (roots.contains(n)) show = true;
       n.style('display', show ? 'element' : 'none');
@@ -172,7 +184,7 @@ function progress(id) {
 }
 cy.on('tap', 'node', e => {
   const n = byId[e.target.id()], p = $('panel');
-  p.replaceChildren(el('h2', n.title), el('div', `${n.kind} · ${n.status} · ${pillarTitle[n.pillar]}${n.when ? ' · ' + n.when : ''}`, {className: 'mut'}), el('p', n.summary));
+  p.replaceChildren(el('h2', n.title), el('div', `${n.kind} · ${n.shown === n.status ? n.status : 'blocked (' + n.status + ')'} · ${pillarTitle[n.pillar]}${n.when ? ' · ' + n.when : ''}`, {className: 'mut'}), el('p', n.summary));
   const acts = el('div', '', {className: 'acts'});
   const act = (label, fn) => acts.append(el('button', label, {type: 'button', onclick: () => { fn(); refresh(); e.target.emit('tap'); }}));
   act('Path to this node', () => { state.focus = [n.id]; state.scope = 'up'; state.others = 'hide'; });
@@ -189,8 +201,12 @@ cy.on('tap', 'node', e => {
     const bar = el('div', '', {className: 'prog'}); const fill = el('div'); fill.style.width = (100 * pr[0] / pr[1]) + '%'; bar.append(fill); p.append(bar); }
   const list = (title, nodes) => { if (!nodes.length) return; p.append(el('strong', title)); const ul = el('ul');
     nodes.forEach(m => { const li = el('li'); const a = el('a', m.data('label'), {href: '#'}); a.onclick = ev => { ev.preventDefault(); cy.$(':selected').unselect(); m.select(); m.emit('tap'); }; li.append(a); ul.append(li); }); p.append(ul); };
-  list('Needs', e.target.incomers('node'));
-  list('Unlocks', e.target.outgoers('node'));
+  const nodesOf = ids => cy.nodes().filter(m => ids.includes(m.id()));
+  const users = field => DATA.nodes.filter(m => (m[field] || []).includes(n.id)).map(m => m.id);
+  list('Blockers', nodesOf(n.blockers || []));
+  list('Contributors', nodesOf(n.contributors || []));
+  list('Blocks', nodesOf(users('blockers')));
+  list('Contributes to', nodesOf(users('contributors')));
   if (n.links && n.links.length) { p.append(el('strong', 'Links')); const ul = el('ul');
     n.links.forEach(u => { const li = el('li'); li.append(el('a', u.replace('https://github.com/spylang/spy/', ''), {href: u, target: '_blank', rel: 'noopener'})); ul.append(li); }); p.append(ul); }
 });

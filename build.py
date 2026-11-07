@@ -6,7 +6,8 @@
 
 Data layout:
   data/<pillar>.toml          one file per pillar; top-level `title` and `order`,
-                              then one [node-id] table per node
+                              then one [node-id] table per node (prerequisites go in
+                              `blockers` and `contributors`)
   data/descriptions/<id>.md   optional long description of a node, in Markdown
                               (Python-Markdown: fenced code, tables, `!!! note "Title"`
                               admonitions, and `[text](node:<id>)` links to other nodes)
@@ -18,9 +19,10 @@ import markdown
 ROOT = Path(__file__).parent
 DATA = ROOT / "data"
 KINDS = {"goal", "feature", "task", "problem", "bug"}
-STATUSES = {"idea", "planned", "in-progress", "done", "blocked"}
+# "blocked" is not stored: the page derives it (planned or in-progress node with an unfinished blocker).
+STATUSES = {"idea", "planned", "in-progress", "done"}
 REQUIRED = {"title", "kind", "status", "summary"}
-OPTIONAL = {"when", "depends_on", "links"}
+OPTIONAL = {"when", "blockers", "contributors", "links"}
 PILLAR_KEYS = {"title", "order"}
 
 
@@ -85,8 +87,12 @@ def validate(nodes):
             errors.append(f"{i}: bad kind {n.get('kind')}")
         if n.get("status") not in STATUSES:
             errors.append(f"{i}: bad status {n.get('status')}")
-        errors += [f"{i}: unknown dependency {d}" for d in n.get("depends_on", []) if d not in ids]
-    deps = {n["id"]: n.get("depends_on", []) for n in nodes}
+        for field in ("blockers", "contributors"):
+            errors += [f"{i}: unknown id in {field}: {d}" for d in n.get(field, []) if d not in ids]
+        both = set(n.get("blockers", [])) & set(n.get("contributors", []))
+        if both:
+            errors.append(f"{i}: {sorted(both)} in both blockers and contributors")
+    deps = {n["id"]: n.get("blockers", []) + n.get("contributors", []) for n in nodes}
     state = {}
 
     def visit(i, path):

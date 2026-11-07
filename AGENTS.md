@@ -6,7 +6,8 @@ Everything needed to work on this repository. For a short introduction, see `REA
 
 A static website, generated from TOML and Markdown files, that represents the
 [SPy](https://github.com/spylang/spy) project as a graph: goals, features, tasks,
-problems and bugs, and "cannot be finished or used without" relations between them. It
+problems and bugs, and the relations between them (what blocks a node, what only
+contributes to it). It
 replaces the flat and outdated `ROADMAP.md` of SPy as a communication tool. The site is
 deployed to <https://paugier.github.io/spy-roadmap-repr/> by GitHub Actions.
 
@@ -55,19 +56,21 @@ kind = "feature"
 status = "done"
 when = "2026-Q1"
 summary = "Typed references for each allocation kind."
-depends_on = ["gc-alloc"]   # ids may live in any pillar file
+blockers = ["gc-alloc"]     # ids may live in any pillar file
+contributors = []           # optional; see "Blockers and contributors"
 links = ["https://github.com/spylang/spy/pull/383"]
 ```
 
 | Field | Required | Values / meaning |
 | --- | --- | --- |
-| table name | yes | Unique id, used in `depends_on` and in description links. |
+| table name | yes | Unique id, used in `blockers`, `contributors` and in description links. |
 | `title` | yes | Short label shown in the graph. |
 | `kind` | yes | `goal`, `feature`, `task`, `problem`, `bug`. |
-| `status` | yes | `idea`, `planned`, `in-progress`, `done`, `blocked`. |
+| `status` | yes | `idea`, `planned`, `in-progress`, `done`. `blocked` is not stored: the page derives it (see below). |
 | `summary` | yes | One or two sentences a reader without compiler background can follow. |
 | `when` | no | Quarter such as `"2026-Q2"` (a string). |
-| `depends_on` | no | Ids of prerequisites. |
+| `blockers` | no | Ids of prerequisites that must be finished before this node can be finished or used. |
+| `contributors` | no | Ids of prerequisites that help this node but do not block it. |
 | `links` | no | PR and issue URLs (shown without the `https://github.com/spylang/spy/` prefix). |
 
 The pillar of a node is the file it lives in. To add a pillar, add `data/<id>.toml` with
@@ -77,29 +80,50 @@ Current pillars: Core language (1), Standard library (2), Memory management (3),
 Low-level features (4), SPy/C integration (5), SPy/Python integration (6), Documentation
 and tooling (7).
 
+### Blockers and contributors
+
+Both fields list prerequisites, and an id may not appear in both.
+
+- A **blocker** is something this node "cannot be finished or used without". Example:
+  `posix-wrapped` is blocked by `c-integration`.
+- A **contributor** brings this node closer to its purpose but is not required for it.
+  Example: `protocols` contributes to the goal `better-language` without blocking it.
+  Goals that gather many features (`low-level-programming`, `python-like-stdlib`...)
+  mostly have contributors.
+
+The status `blocked` is deduced by the page, not written in the data: a node that is
+`planned` or `in-progress` is shown as `blocked` while at least one of its blockers is not
+`done`. An `idea` is never shown as blocked, and a `done` node never is. Contributors never
+block.
+
 ### Conventions
 
 - `goal` nodes are the "northern stars"; the Focus menu lists them first. A goal
-  may depend on other goals: a main goal (nothing depends on it, drawn bigger, e.g.
+  may have other goals as prerequisites: a main goal (nothing depends on it, drawn bigger, e.g.
   "Faster interpreter", "Python-like stdlib", "Full SPy/Python interop") sits on top
   of the goals of the pillars that lead to it (e.g. "SPy interpreter written in SPy").
   The menu groups them as main and intermediate goals, computed from the
-  dependencies; there is no field for it.
-- A dependency means "cannot be finished or used without". Add one only when the sources
-  state it or the design makes it clear, never to make the graph look connected.
-- An edge goes from the prerequisite to what it unlocks, so the layout reads left to
+  blockers and contributors; there is no field for it.
+- A blocker means "cannot be finished or used without". Add a blocker or a contributor
+  only when the sources state it or the design makes it clear, never to make the graph
+  look connected. When in doubt between the two, use `contributors`: a wrong blocker
+  makes a node look blocked.
+- An edge goes from the prerequisite to what it unlocks (solid for a blocker, dashed for a
+  contributor), so the layout reads left to
   right from foundations to goals.
 - Within a file, put goals first, then nodes in the order you want to read them.
 - Status: `done` only for merged work; a feature that is only a proposal is `idea`; one
   that the SPy roadmap already lists is `planned`. Check the PR before choosing
   `in-progress` or `done`.
-- `problem` and `bug` nodes are limited to those that block a feature.
+- `problem` and `bug` nodes are limited to those that block a feature: list them in its
+  `blockers`.
 
 ### Validation done by `build.py`
 
-TOML syntax errors, missing required fields, unknown fields, unknown `kind` or `status`,
-duplicate ids, dependencies on unknown ids, description files without a node, links to
-unknown nodes inside descriptions, and dependency cycles.
+TOML syntax errors, missing required fields, unknown fields, unknown `kind` or `status`
+(including a stored `blocked`), duplicate ids, unknown ids in `blockers` or `contributors`,
+an id in both, description files without a node, links to unknown nodes inside
+descriptions, and cycles (blockers and contributors together).
 
 ## Long descriptions
 
@@ -136,22 +160,25 @@ Style, following the book notes the descriptions come from:
 `site_src/index.html` is a single file using [Cytoscape.js](https://js.cytoscape.org/) with
 the dagre layout, loaded from jsDelivr at pinned versions (keep exact versions).
 
-- Node colors follow `status` (CSS variables, light and dark theme).
+- Node colors follow the status, with `blocked` derived from the blockers (CSS variables,
+  light and dark theme). Blocker edges are solid, contributor edges dashed.
 - Selection of what is shown (state in the `state` object, mirrored in the URL hash as
-  `#p=<pillars>&f=<focus nodes>&s=<scope>&o=<others>&d=0`, so a view can be shared):
+  `#p=<pillars>&f=<focus nodes>&s=<scope>&o=<others>&d=0&i=1`, so a view can be shared):
   - **Pillars**: one checkbox per pillar (several can be shown), with `all` / `none`.
-  - **Hide done** (checked by default).
+  - **Hide done** (checked by default; `d=0` when unchecked) and **hide ideas** (unchecked by
+    default; `i=1` when checked).
   - **Focus**: any set of nodes (goal or not), added from the "+ add a node" menu, from the
     side-panel buttons, or removed with the chips. **Show** says what is kept around each
     focus node: what it needs (path to it, the default), what it unlocks, both, or the
     node only. **Other nodes** are hidden (default), dimmed, or left unchanged; with
     dimmed or unchanged, the focus set is highlighted (accent underlay), which gives
     "highlight only".
-  - A node is shown if its pillar is chosen, it is not hidden as done, and (focus active
+  - A node is shown if its pillar is chosen, it is not hidden as done or as an idea, and (focus active
     and others hidden) it is in the focus set. Focus nodes themselves are always shown.
 - Clicking a node opens the side panel: summary, focus buttons (path to it, what it
   unlocks, highlight only, add to / remove from focus), long description, share of
-  prerequisites done, "Needs" and "Unlocks" lists (clickable), links.
+  prerequisites done, "Blockers", "Contributors", "Blocks" and "Contributes to" lists
+  (clickable), links.
 - Links `[text](node:id)` in descriptions become `<a href="#" data-node="id">` in
   `build.py`, and the page selects the target node on click.
 - CSS is written in a few long lines; when editing it with a script, make sure a newline

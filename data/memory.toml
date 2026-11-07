@@ -39,7 +39,7 @@ kind = "feature"
 status = "done"
 when = "2026-Q1"
 summary = "Typed references for each allocation kind."
-depends_on = ["gc-alloc"]
+blockers = ["gc-alloc"]
 
 [boehm]
 title = "Boehm GC support"
@@ -47,7 +47,7 @@ kind = "feature"
 status = "done"
 when = "2026-Q1"
 summary = "Automatic memory management through the Boehm collector."
-depends_on = ["gc-alloc"]
+blockers = ["gc-alloc"]
 links = [
   "https://github.com/spylang/spy/pull/383",
 ]

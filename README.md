@@ -26,7 +26,7 @@ The page loads its scripts from a CDN, so a browser with network access is neede
 The content is plain text in `data/`:
 
 - `data/<pillar>.toml`: one file per theme, one `[node-id]` table per node (title, kind,
-  status, summary, dependencies, links);
+  status, summary, blockers, contributors, links);
 - `data/descriptions/<node-id>.md`: optional longer text for a node.
 
 Edit them, run `uv run build.py` (it reports any inconsistency), look at the graph, and

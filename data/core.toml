@@ -9,35 +9,35 @@ title = "Perf interpreter"
 kind = "goal"
 status = "idea"
 summary = "Programs run in the SPy interpreter (before compilation) much faster than today. The way there is to compile the interpreter itself with SPy."
-depends_on = ["selfhost-interp"]
+blockers = ["selfhost-interp"]
 
 [selfhost-interp]
 title = "Self-hosting: compile the SPy interpreter and compiler"
 kind = "goal"
 status = "planned"
 summary = "The SPy interpreter and compiler, written in Python, are themselves compiled by SPy."
-depends_on = ["python-subset"]
+blockers = ["python-subset"]
 
 [selfhost-cli]
 title = "Self-hosting: compile the SPy CLI"
 kind = "goal"
 status = "idea"
 summary = "The spy command-line tool, written in Python, is compiled by SPy too: the whole toolchain runs without CPython."
-depends_on = ["selfhost-interp", "python-like-core", "cli-lib", "posix-wrapped"]
+blockers = ["selfhost-interp", "python-like-core", "cli-lib", "posix-wrapped"]
 
 [python-subset]
 title = "Compile a large subset of Python"
 kind = "goal"
 status = "planned"
 summary = "SPy compiles most of the Python used by real programs (classes, exceptions, context managers, strings), not only numerical code."
-depends_on = ["heap-classes", "class-modifiers", "try-catch", "with-ctx", "str-bytes"]
+blockers = ["heap-classes", "class-modifiers", "try-catch", "with-ctx", "str-bytes"]
 
 [better-language]
 title = "Better language"
 kind = "goal"
 status = "planned"
 summary = "Language features that go beyond Python: protocols, variants (sum types), compile-time metaprogramming."
-depends_on = ["class-modifiers", "protocols", "variants", "blue-args"]
+contributors = ["class-modifiers", "protocols", "variants", "blue-args"]
 
 [blue-args]
 title = "Blue-time *args and **kwargs"
@@ -77,7 +77,7 @@ title = "Variants (sum types)"
 kind = "feature"
 status = "idea"
 summary = "A value that is one of several alternatives, each with its own fields, checked by the compiler."
-depends_on = ["unions"]
+blockers = ["unions"]
 
 [live-image]
 title = "Serialize the live image after redshifting"
@@ -90,7 +90,7 @@ title = "Heap-allocated classes"
 kind = "feature"
 status = "planned"
 summary = "Classes whose instances live on the heap and are accessed by reference."
-depends_on = ["gc-ref"]
+blockers = ["gc-ref"]
 
 [with-ctx]
 title = "with and context managers"

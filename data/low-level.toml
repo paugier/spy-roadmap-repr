@@ -11,21 +11,21 @@ title = "Perf compiled code"
 kind = "goal"
 status = "planned"
 summary = "Compiled SPy programs run as fast as the C a careful programmer would write."
-depends_on = ["low-level-programming", "whippet"]
+contributors = ["low-level-programming", "whippet"]
 
 [low-level-programming]
 title = "Low-level programming in SPy"
 kind = "goal"
 status = "planned"
 summary = "Northern star of this pillar: SPy is expressive enough to write numerical kernels, binary-format parsers and wrappers around C libraries, with the control a C programmer expects."
-depends_on = ["inline-array", "noalias", "layout-control", "unions", "bit-ops", "small-numeric-types", "span", "raw-free"]
+contributors = ["inline-array", "noalias", "layout-control", "unions", "bit-ops", "small-numeric-types", "span", "raw-free"]
 
 [inline-array]
 title = "Fixed-size arrays (InlineArray)"
 kind = "feature"
 status = "idea"
 summary = "Small vectors and matrices (a 3D position, a 3x3 tensor) stored directly inside structs and stack frames, with a length known at compile time."
-depends_on = ["gc-ref"]
+blockers = ["gc-ref"]
 
 [noalias]
 title = "Non-aliasing pointers (@noalias)"
@@ -38,7 +38,7 @@ title = "Layout control (packed, align, offsetof)"
 kind = "feature"
 status = "idea"
 summary = "Choose how struct fields are laid out in memory, for binary file formats, network headers and cache-line alignment."
-depends_on = ["c-portability", "calc-layout-c-rules", "layout-agree-check", "sizeof-alignof-types", "ptr-size-platform"]
+blockers = ["calc-layout-c-rules", "layout-agree-check", "sizeof-alignof-types", "ptr-size-platform"]
 
 [unions]
 title = "Unions (ll_union) and tagged unions"
@@ -51,7 +51,7 @@ title = "Bit-level operations"
 kind = "feature"
 status = "idea"
 summary = "Read the bits of a float as an integer, and count or rotate bits, each in one CPU instruction."
-depends_on = ["c-portability"]
+blockers = ["c-portability"]
 
 [small-numeric-types]
 title = "Smaller numeric types (i16, u16, f16, bf16)"
@@ -70,7 +70,7 @@ title = "Releasing raw memory (raw_free and with)"
 kind = "feature"
 status = "planned"
 summary = "Free manually allocated memory, and guarantee it is released when a block is left."
-depends_on = ["with-ctx"]
+blockers = ["with-ctx"]
 
 [c-portability]
 title = "C11 and portability macros for generated C"
@@ -92,7 +92,7 @@ title = "Check that the interpreter and C layouts agree"
 kind = "problem"
 status = "idea"
 summary = "Nothing verifies that the layout computed by SPy equals the one the C compiler picks, so a mismatch silently corrupts memory."
-depends_on = ["c-portability"]
+blockers = ["c-portability"]
 
 [sizeof-alignof-types]
 title = "sizeof and alignof for every type"
