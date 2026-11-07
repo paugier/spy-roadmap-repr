@@ -4,12 +4,39 @@
 title = "Standard library"
 order = 2
 
+[numspy]
+title = "NumSPy"
+kind = "goal"
+status = "in-progress"
+summary = "An implementation of the Python array API standard written in SPy: numpy-like arrays that compile to fast code."
+depends_on = ["array-improve", "low-level-programming"]
+
+[python-like-lib]
+title = "Python-like lib"
+kind = "goal"
+status = "planned"
+summary = "Third-party libraries with the API a Python user knows (NumSPy for arrays, a Typer/click-like library for command lines...) exist in SPy."
+depends_on = ["numspy", "cli-lib"]
+
+[python-like-core]
+title = "Python-like core"
+kind = "goal"
+status = "planned"
+summary = "The core types and functions a Python user expects (str, bytes, list, dict, array, file I/O) are in SPy and behave as in Python."
+depends_on = ["str-bytes", "array-improve", "full-io"]
+
+[cli-lib]
+title = "Typer/click-like CLI library"
+kind = "feature"
+status = "idea"
+summary = "A library to declare command-line tools (arguments, options, subcommands) from function signatures, with the API of Typer and click."
+
 [python-like-stdlib]
 title = "Python-like stdlib"
 kind = "goal"
 status = "planned"
-summary = "The modules a Python user expects (str, bytes, array, file I/O, sockets, datetime, argparse, json...) are available in SPy and behave as in Python."
-depends_on = ["str-bytes", "array-improve", "full-io", "socket", "more-stdlib", "libs-from-c"]
+summary = "The standard-library modules a Python user expects (datetime, argparse, json, socket, posix, sqlite...) are available in SPy."
+depends_on = ["python-like-core", "socket", "posix-wrapped", "sqlite-wrapped", "more-stdlib"]
 
 [str-bytes]
 title = "str and bytes in pure SPy"
@@ -19,10 +46,24 @@ when = "2026-Q2"
 summary = "Rewrite the core string types in SPy rather than in the runtime."
 
 [socket]
-title = "socket support"
+title = "socket wrapped"
 kind = "feature"
 status = "planned"
-summary = "Network sockets."
+summary = "A socket module that wraps the C network functions."
+depends_on = ["c-integration"]
+
+[posix-wrapped]
+title = "posix wrapped"
+kind = "feature"
+status = "planned"
+summary = "A posix module that wraps the C system functions (files, processes, environment)."
+depends_on = ["c-integration"]
+
+[sqlite-wrapped]
+title = "sqlite wrapped"
+kind = "feature"
+status = "planned"
+summary = "A sqlite module that wraps the SQLite C library."
 depends_on = ["c-integration"]
 
 [full-io]

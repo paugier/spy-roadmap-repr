@@ -5,11 +5,25 @@ title = "SPy/Python integration"
 order = 6
 
 [python-interop]
-title = "Full SPy/Python interop"
+title = "Python interop"
 kind = "goal"
 status = "planned"
-summary = "SPy can import Python modules and be imported from Python. SPy then becomes a better Cython."
+summary = "SPy and Python work together in both directions, and exchange arrays without copying. SPy then becomes a better Cython."
+depends_on = ["call-python-from-spy", "call-spy-from-python", "array-memoryview"]
+
+[call-python-from-spy]
+title = "Call Python from SPy"
+kind = "goal"
+status = "planned"
+summary = "SPy code can import Python modules and call their functions."
 depends_on = ["c-integration", "refcounting"]
+
+[call-spy-from-python]
+title = "Call SPy from Python (C extensions)"
+kind = "goal"
+status = "planned"
+summary = "SPy modules can be compiled to CPython C extensions and imported from Python."
+depends_on = ["py-cffi", "refcounting"]
 
 [py-cffi]
 title = "py-cffi output kind"

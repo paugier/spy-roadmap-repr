@@ -20,7 +20,7 @@ summary = "Plain refcounting in pure SPy; with Python interop it maps to Py_IncR
 title = "Experiment with Whippet GC"
 kind = "feature"
 status = "idea"
-summary = "Try an alternative garbage collector."
+summary = "Try an alternative garbage collector, to speed up compiled programs."
 
 [gc-alloc]
 title = "gc_alloc vs raw_malloc"

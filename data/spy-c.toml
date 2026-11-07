@@ -4,13 +4,6 @@
 title = "SPy/C integration"
 order = 5
 
-[libs-from-c]
-title = "posix, socket and sqlite wrapping C libraries"
-kind = "goal"
-status = "planned"
-summary = "Northern star of SPy/C integration: standard-library modules implemented by wrapping existing C libraries."
-depends_on = ["c-integration"]
-
 [c-integration]
 title = "SPy/C integration (FFI)"
 kind = "feature"

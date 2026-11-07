@@ -6,6 +6,13 @@
 title = "Low-level features"
 order = 4
 
+[perf-compiled]
+title = "Perf compiled code"
+kind = "goal"
+status = "planned"
+summary = "Compiled SPy programs run as fast as the C a careful programmer would write."
+depends_on = ["low-level-programming", "whippet"]
+
 [low-level-programming]
 title = "Low-level programming in SPy"
 kind = "goal"
