@@ -4,11 +4,13 @@
 
 Helpers like `vectorize`, `benchmark` (time a function called many times) and `partial`
 (fix some arguments of a function) are blue functions that build a new function from the
-number and the types of the arguments they receive. They need two tools:
+number and the types of the arguments they receive. Besides [unroll for
+splicing](node:unroll-splice), they need three pieces:
 
-- [unrolled loops](node:unroll-for), to generate the code for each argument in turn;
-- [spreading of tuples](node:star-splice), to pass the arguments to the generated code
-  whatever their number.
+- `args_m.types`: the tuple of the types of the arguments of a metafunction;
+- `*args: *types`: a compiled function that takes any number of arguments, whose types
+  are given by a compile-time tuple;
+- `f(*args)` in compiled code, where `args` is a tuple of known length.
 
 ```python
 @blue.generic
@@ -24,4 +26,5 @@ def benchmark(fct, repeat):
 
 `benchmark[kernel, 100]` is a function whose body contains 100 copies of the call
 `kernel(*args)`. The `unroll_range` loop already works; the `*args_m.types` annotation and
-the `*args` spread are the missing parts. The spellings are design proposals.
+the `*args` spread in compiled code are the missing parts. The spellings are design
+proposals.
