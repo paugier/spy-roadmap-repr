@@ -22,6 +22,6 @@ summary = "Wrap a C library in a Python package outside the SPy source tree. It 
 [extern]
 title = "Declare C functions (@extern)"
 kind = "feature"
-status = "idea"
+status = "planned"
 summary = "Declare a C function in SPy with a decorator and call it directly, without glue code. The spelling @extern is a proposal."
 contributors = ["function-types", "layout-agree-check"]

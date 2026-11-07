@@ -35,7 +35,7 @@ summary = "A library to declare command-line tools (arguments, options, subcomma
 [python-like-stdlib]
 title = "Python-like stdlib"
 kind = "goal"
-status = "planned"
+status = "in-progress"
 summary = "The few standard-library modules that matter most to a Python user (math, json, argparse, datetime, posix, socket, sqlite3...) are available in SPy, with the API they know."
 contributors = ["python-like-core", "mod-random", "mod-math", "mod-time", "mod-collections", "mod-json", "mod-argparse", "mod-datetime", "mod-re", "mod-pathlib", "mod-subprocess", "mod-posix", "mod-socket", "mod-sqlite3"]
 

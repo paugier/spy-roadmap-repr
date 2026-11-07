@@ -7,7 +7,7 @@ order = 1
 [perf-interpreter]
 title = "Perf interpreter"
 kind = "goal"
-status = "idea"
+status = "planned"
 summary = "Programs run in the SPy interpreter (before compilation) much faster than today. The way there is to compile the interpreter itself with SPy."
 blockers = ["selfhost-interp"]
 
@@ -21,7 +21,7 @@ blockers = ["python-subset"]
 [selfhost-cli]
 title = "Self-hosting: compile the SPy CLI"
 kind = "goal"
-status = "idea"
+status = "planned"
 summary = "The spy command-line tool, written in Python, is compiled by SPy too: the whole toolchain runs without CPython."
 blockers = ["selfhost-interp", "python-like-core", "cli-lib", "mod-posix"]
 
@@ -49,21 +49,21 @@ summary = "Variable numbers of arguments handled at compile time (blue time)."
 [metaclasses]
 title = "Metaclasses in SPy"
 kind = "feature"
-status = "idea"
+status = "planned"
 summary = "The compiler only knows plain structs. Heap-allocated classes, classes with inheritance, protocols and variants are written in SPy, in the standard library, as metaclasses. The names are proposals."
 blockers = ["advanced-metaprog"]
 
 [advanced-metaprog]
 title = "Advanced metaprogramming"
 kind = "feature"
-status = "idea"
+status = "planned"
 summary = "Generate specialized code from a compile-time-known number of arguments: a function that takes any number of typed arguments, and calls that spread them. It is the tool behind helpers such as vectorize, benchmark and partial."
-blockers = ["unroll-splice"]
+blockers = ["unroll-splice", "args_m-types"]
 
 [unroll-splice]
 title = "Unroll for splicing"
 kind = "feature"
-status = "idea"
+status = "planned"
 summary = "Write one expression per element of a compile-time-known range inside a tuple, a call or a subscript, with *(expr for i in unroll_range(n)). The spelling is a proposal."
 blockers = ["unroll-for", "starred-blue"]
 
@@ -86,11 +86,11 @@ links = [
   "https://github.com/spylang/spy/pull/754",
 ]
 
-[star-splice]
-title = "Starred arguments and args_m.types"
+[args_m-types]
+title = "args_m.types"
 kind = "feature"
 status = "idea"
-summary = "Spread a tuple into a call, a tuple or a tuple type with *, including at compile time, and read the types of the arguments of a metafunction. The spelling is a proposal."
+summary = "`args_m` get a attribute `types`."
 
 [print-varargs]
 title = "print() with variable arguments"
@@ -115,21 +115,21 @@ summary = "Enough compile-time metaprogramming to implement things like dataclas
 [protocols]
 title = "Protocols"
 kind = "feature"
-status = "idea"
+status = "planned"
 summary = "Describe the methods a type must provide, so that unrelated classes can be used through one interface, with default method implementations."
 blockers = ["metaclasses"]
 
 [variants]
 title = "Variants (sum types)"
 kind = "feature"
-status = "idea"
+status = "planned"
 summary = "A value that is one of several alternatives, each with its own fields, checked by the compiler."
 blockers = ["unions", "metaclasses"]
 
 [function-types]
 title = "Function types and function values (Callable)"
 kind = "feature"
-status = "idea"
+status = "planned"
 summary = "Pass a function as an argument and call it at run time, for example a comparison function given to a sort. The spelling Callable[[i32, i32], i32] is a proposal."
 
 [live-image]
@@ -143,7 +143,7 @@ title = "Heap-allocated classes"
 kind = "feature"
 status = "planned"
 summary = "Classes whose instances live on the heap and are accessed by reference."
-blockers = ["gc-ref"]
+blockers = ["gc-ref", "metaclasses"]
 
 [with-ctx]
 title = "with and context managers"
