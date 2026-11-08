@@ -42,9 +42,17 @@ contributors = ["records", "protocols", "variants", "metaclasses", "advanced-met
 [blue-args]
 title = "Blue-time *args and **kwargs"
 kind = "feature"
+status = "done"
+when = "2026-Q2"
+summary = "Variable numbers of arguments handled at compile time (blue time)."
+
+[blue-kwargs]
+title = "Blue-time **kwargs"
+kind = "feature"
 status = "planned"
 when = "2026-Q2"
 summary = "Variable numbers of arguments handled at compile time (blue time)."
+
 
 [metaclasses]
 title = "Metaclasses in SPy"
@@ -58,8 +66,8 @@ title = "Advanced metaprogramming"
 kind = "feature"
 status = "planned"
 summary = "Generate specialized code from a compile-time-known number of arguments: a function that takes any number of typed arguments, and calls that spread them. It is the tool behind helpers such as vectorize, benchmark and partial."
-blockers = ["unroll-for-usable", "unroll-splice", "args_m-types", "starred-blue", "args-types-red"]
-contributors = ["blue-args"]
+blockers = ["unroll-for-usable", "unroll-splice", "starred-blue", "args-types-red"]
+contributors = ["blue-args", "blue-kwargs", "args_m-loc", "args_m-types"]
 
 [unroll-splice]
 title = "Unroll for splicing"
@@ -133,6 +141,12 @@ title = "args_m.types"
 kind = "feature"
 status = "idea"
 summary = "`args_m` get a attribute `types`."
+
+[args_m-loc]
+title = "args_m.loc"
+kind = "feature"
+status = "idea"
+summary = "`args_m` get a attribute `loc`."
 
 [print-varargs]
 title = "print() with variable arguments"

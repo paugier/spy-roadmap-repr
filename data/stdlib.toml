@@ -13,10 +13,11 @@ blockers = ["array-improve", "explicit-vectorization"]
 contributors = ["inline-array"]
 
 [python-like-lib]
-title = "Python-like lib"
+title = "Python-like libs"
 kind = "goal"
 status = "planned"
 summary = "Third-party libraries with the API a Python user knows (NumSPy for arrays, a Typer/click-like library for command lines...) exist in SPy."
+blockers = ["python-subset"]
 contributors = ["numspy", "cli-lib"]
 
 [python-like-core]
@@ -31,6 +32,7 @@ title = "Typer/click-like CLI library"
 kind = "feature"
 status = "idea"
 summary = "A library to declare command-line tools (arguments, options, subcommands) from function signatures, with the API of Typer and click."
+blockers = ["python-subset"]
 
 [python-like-stdlib]
 title = "Python-like stdlib"
@@ -42,7 +44,7 @@ contributors = ["python-like-core", "mod-random", "mod-math", "mod-time", "mod-c
 [str-bytes]
 title = "str and bytes in pure SPy"
 kind = "feature"
-status = "planned"
+status = "in-progress"
 when = "2026-Q2"
 summary = "Rewrite the core string types in SPy rather than in the runtime."
 
