@@ -30,14 +30,14 @@ title = "Compile a large subset of Python"
 kind = "goal"
 status = "planned"
 summary = "SPy compiles most of the Python used by real programs (classes, exceptions, context managers, strings), not only numerical code."
-blockers = ["heap-classes", "class-modifiers", "try-catch", "with-ctx", "str-bytes"]
+blockers = ["heap-classes", "try-catch", "with-ctx", "str-bytes"]
 
 [better-language]
 title = "Better language"
 kind = "goal"
 status = "planned"
 summary = "Language features that go beyond Python: protocols, variants (sum types), compile-time metaprogramming."
-contributors = ["class-modifiers", "protocols", "variants", "blue-args", "metaclasses", "advanced-metaprog"]
+contributors = ["records", "protocols", "variants", "metaclasses", "advanced-metaprog"]
 
 [blue-args]
 title = "Blue-time *args and **kwargs"
@@ -58,14 +58,15 @@ title = "Advanced metaprogramming"
 kind = "feature"
 status = "planned"
 summary = "Generate specialized code from a compile-time-known number of arguments: a function that takes any number of typed arguments, and calls that spread them. It is the tool behind helpers such as vectorize, benchmark and partial."
-blockers = ["unroll-splice", "args_m-types"]
+blockers = ["unroll-for-usable", "unroll-splice", "args_m-types", "starred-blue", "args-types-red"]
+contributors = ["blue-args"]
 
 [unroll-splice]
 title = "Unroll for splicing"
 kind = "feature"
 status = "planned"
 summary = "Write one expression per element of a compile-time-known range inside a tuple, a call or a subscript, with *(expr for i in unroll_range(n)). The spelling is a proposal."
-blockers = ["unroll-for", "starred-blue"]
+blockers = ["unroll-for-usable", "starred-blue"]
 
 [starred-blue]
 title = "Starred syntax and starred expressions in blue functions"
@@ -76,6 +77,13 @@ links = [
   "https://github.com/spylang/spy/pull/710",
 ]
 
+[args-types-red]
+title = "*args: *types in compiled functions"
+kind = "feature"
+status = "idea"
+summary = "A compiled (red) function can take any number of arguments, with their types given by a compile-time tuple: def impl(*args: *types). The spelling is a proposal."
+blockers = ["starred-blue"]
+
 [unroll-for]
 title = "Unrolled for loops (unroll_range)"
 kind = "feature"
@@ -84,6 +92,40 @@ when = "2026-Q4"
 summary = "A for loop over unroll_range(n), with n known at compile time, is copied n times instead of running as a loop."
 links = [
   "https://github.com/spylang/spy/pull/754",
+]
+
+[unroll-for-usable]
+title = "Unrolled for loops usable"
+kind = "feature"
+status = "planned"
+summary = "unroll_range works, but is not yet usable in real code: the length of the arguments of a metafunction, the length of a tuple and tuples and ranges at compile time still have to be handled as compile-time (blue) values."
+blockers = ["unroll-for", "blue-len-args-m", "blue-len-tuple", "blue-struct-tuple-range"]
+
+[blue-len-args-m]
+title = "len(args_m) should be blue"
+kind = "problem"
+status = "planned"
+summary = "In a metafunction, len(args_m) is the number of arguments it receives. This number is known at compile time, but the compiler does not yet treat it as a compile-time (blue) value."
+links = [
+  "https://github.com/spylang/spy/issues/759",
+]
+
+[blue-len-tuple]
+title = "len(tuple) should be blue"
+kind = "problem"
+status = "planned"
+summary = "The length of a tuple is part of its type. COLOR(len(tup)), with tup a red (run-time) tuple, should be blue (known at compile time), so that it can drive an unrolled loop."
+links = [
+  "https://github.com/spylang/spy/issues/760",
+]
+
+[blue-struct-tuple-range]
+title = "Blue structs, tuple, range"
+kind = "feature"
+status = "planned"
+summary = "Structs, tuples and ranges whose content is known at compile time are handled as compile-time (blue) values."
+links = [
+  "https://github.com/spylang/spy/issues/761",
 ]
 
 [args_m-types]
@@ -106,11 +148,12 @@ status = "done"
 when = "2026-Q2"
 summary = "Formatted string literals."
 
-[class-modifiers]
-title = "Metaprogramming for class modifiers (dataclasses...)"
+[records]
+title = "Records"
 kind = "feature"
 status = "planned"
-summary = "Enough compile-time metaprogramming to implement things like dataclasses in SPy itself."
+summary = "Like dataclass but for structs."
+blockers = ["metaclasses"]
 
 [protocols]
 title = "Protocols"

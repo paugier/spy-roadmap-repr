@@ -9,8 +9,8 @@ title = "NumSPy"
 kind = "goal"
 status = "in-progress"
 summary = "An implementation of the Python array API standard written in SPy: numpy-like arrays that compile to fast code."
-blockers = ["array-improve"]
-contributors = ["low-level-programming"]
+blockers = ["array-improve", "explicit-vectorization"]
+contributors = ["inline-array"]
 
 [python-like-lib]
 title = "Python-like lib"
@@ -141,11 +141,25 @@ summary = "A sqlite3 module that wraps the SQLite C library."
 blockers = ["c-integration"]
 
 [array-improve]
-title = "Improve array"
+title = "Improve stdlib array"
 kind = "feature"
 status = "planned"
 summary = "array is a proof of concept for now, and very limited."
-blockers = ["stdlib-foundations"]
+blockers = ["stdlib-foundations", "generic-ndim-array"]
+
+[generic-ndim-array]
+title = "Generic NDIM array"
+kind = "feature"
+status = "planned"
+summary = "One array type for any number of dimensions, with the number of dimensions (NDIM) known at compile time, instead of one hand-written type per dimension."
+blockers = ["advanced-metaprog"]
+
+[loop-fusion]
+title = "Loop fusion"
+kind = "feature"
+status = "idea"
+summary = "Merge the successive loops of an array expression such as a * b + c into one loop, so the intermediate arrays are never stored in memory. The spelling is a proposal."
+blockers = ["advanced-metaprog"]
 
 [stdlib-foundations]
 title = "stdlib directory, list, dict, array"
