@@ -25,7 +25,6 @@ title = "Fixed-size arrays (InlineArray)"
 kind = "feature"
 status = "idea"
 summary = "Small vectors and matrices (a 3D position, a 3x3 tensor) stored directly inside structs and stack frames, with a length known at compile time."
-blockers = ["gc-ref"]
 
 [noalias]
 title = "Non-aliasing pointers (@noalias)"
@@ -84,14 +83,13 @@ kind = "feature"
 status = "in-progress"
 summary = "Write numerical kernels with SIMD vectors, which process several numbers per CPU instruction, and run the same kernel on the best vector width of the target machine."
 blockers = ["simd-type", "simd-ops", "simd-reductions", "simd-conversions", "simd-width", "simd-march"]
-contributors = ["vectorize"]
 
 [vectorize]
 title = "vectorize: scalar kernel to SIMD loop"
 kind = "feature"
 status = "idea"
 summary = "A helper that turns a function written for one number into a loop over vectors, with a scalar loop for the remaining elements. The spelling is a proposal."
-blockers = ["advanced-metaprog"]
+blockers = ["advanced-metaprog", "explicit-vectorization"]
 
 [simd-type]
 title = "SIMD type"

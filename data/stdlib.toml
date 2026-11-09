@@ -198,7 +198,7 @@ title = "SciSPy"
 kind = "goal"
 status = "idea"
 summary = "A SciPy-like library of scientific algorithms written in SPy, on top of NumSPy."
-blockers = ["numspy", "isolate", "blas-lapack"]
+blockers = ["numspy", "isolate", "blas-lapack", "vectorize"]
 
 [blas-lapack]
 title = "BLAS/LAPACK wrapped"

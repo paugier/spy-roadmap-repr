@@ -32,7 +32,7 @@ kind = "goal"
 status = "planned"
 summary = "SPy compiles most of the Python used by real programs (classes, exceptions, context managers, strings), not only numerical code."
 blockers = ["heap-classes", "try-catch", "with-ctx", "str-bytes"]
-contributors = ["fstrings", "list-literals", "dict-literals", "tuple", "for-loops", "default-args", "is-op", "pep695"]
+contributors = ["fstrings", "list-literals", "dict-literals", "tuple", "for-loops", "default-args", "is-op", "pep695", "print-varargs"]
 
 [types-metaprog]
 title = "Expressive types and metaprogramming"
@@ -69,7 +69,7 @@ kind = "feature"
 status = "planned"
 summary = "Generate specialized code from a compile-time-known number of arguments: a function that takes any number of typed arguments, and calls that spread them. It is the tool behind helpers such as vectorize, benchmark and partial."
 blockers = ["unroll-for-usable", "unroll-splice", "starred-blue", "args-types-red"]
-contributors = ["blue-args", "blue-kwargs", "args_m-loc", "args_m-types", "dunder-meta", "print-varargs"]
+contributors = ["blue-args", "blue-kwargs", "args_m-loc", "args_m-types", "dunder-meta"]
 
 [unroll-splice]
 title = "Unroll for splicing"
