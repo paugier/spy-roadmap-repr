@@ -148,6 +148,7 @@ kind = "feature"
 status = "planned"
 summary = "array is a proof of concept for now, and very limited."
 blockers = ["stdlib-foundations", "generic-ndim-array"]
+contributors = ["loop-fusion"]
 
 [generic-ndim-array]
 title = "Generic NDIM array"
