@@ -87,14 +87,13 @@ Both fields list prerequisites, and an id may not appear in both.
 - A **blocker** is something this node "cannot be finished or used without". Example:
   `mod-posix` is blocked by `c-integration`.
 - A **contributor** brings this node closer to its purpose but is not required for it.
-  Example: `protocols` contributes to the goal `better-language` without blocking it.
+  Example: `protocols` contributes to the goal `types-metaprog` without blocking it.
   Goals that gather many features (`low-level-programming`, `python-like-stdlib`...)
   mostly have contributors.
 
-The status `blocked` is deduced by the page, not written in the data: a node that is
-`planned` or `in-progress` is shown as `blocked` while at least one of its blockers is not
-`done`. An `idea` is never shown as blocked, and a `done` node never is. Contributors never
-block.
+The state shown on the page is deduced, not written in the data (see "The page"): a node
+that is not `done` is shown as `blocked` while at least one of its blockers is not `done`.
+This holds for an `idea` too. A `done` node is never blocked, and contributors never block.
 
 ### Conventions
 
@@ -165,8 +164,12 @@ Style, following the book notes the descriptions come from:
 `site_src/index.html` is a single file using [Cytoscape.js](https://js.cytoscape.org/) with
 the dagre layout, loaded from jsDelivr at pinned versions (keep exact versions).
 
-- Node colors follow the status, with `blocked` derived from the blockers (CSS variables,
-  light and dark theme). Blocker edges are solid, contributor edges dashed.
+- Node colors code the state, derived from `status` and the blockers (CSS variables, light
+  and dark theme): red = blocked (an unfinished blocker, whatever the status, ideas
+  included), blue = ready to start (not blocked, `planned` or `idea`), yellow =
+  `in-progress`, green = `done`. A dashed outline marks an `idea`; a `planned` node has no
+  outline. A goal is not implemented directly, so a goal that is not started and not blocked
+  is gray, never blue. Blocker edges are solid, contributor edges dashed.
 - Selection of what is shown (state in the `state` object, mirrored in the URL hash as
   `#p=<pillars>&f=<focus nodes>&s=<scope>&o=<others>&d=0&i=1`, so a view can be shared):
   - **Pillars**: one checkbox per pillar (several can be shown), with `all` / `none`.

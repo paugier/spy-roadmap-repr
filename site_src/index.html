@@ -4,9 +4,9 @@
 <title>SPy roadmap</title>
 <style>
 :root{color-scheme:light dark;--bg:#fff;--fg:#1d2226;--mut:#667;--line:#bbc;--panel:#f4f5f8;
---done:#4caf7a;--wip:#f2b134;--planned:#7aa7e0;--idea:#c9c9d3;--blocked:#e0605e;--txt:#111;--accent:#c2255c}
+--done:#4caf7a;--wip:#f2b134;--ready:#7aa7e0;--neutral:#c9c9d3;--blocked:#e0605e;--txt:#111;--accent:#c2255c}
 @media(prefers-color-scheme:dark){:root{--bg:#161a1d;--fg:#e6e8ea;--mut:#9aa;--line:#556;--panel:#222831;
---done:#2f7d55;--wip:#a8791b;--planned:#3f68a0;--idea:#4a4a58;--blocked:#9b3c3b;--txt:#f2f2f2;--accent:#f06595}}
+--done:#2f7d55;--wip:#a8791b;--ready:#3f68a0;--neutral:#4a4a58;--blocked:#9b3c3b;--txt:#f2f2f2;--accent:#f06595}}
 body{margin:0;font:15px system-ui,sans-serif;background:var(--bg);color:var(--fg);display:flex;flex-direction:column;height:100vh}
 header{padding:8px 12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;border-bottom:1px solid var(--line)}
 h1{font-size:18px;margin:0 8px 0 0}
@@ -16,15 +16,15 @@ select,label{font:inherit;color:inherit}select{background:var(--panel);border:1p
 .chip{border-color:var(--accent)}.chip button{border:0;background:none;color:inherit;cursor:pointer;font:inherit;padding:0 0 0 2px}
 button.lnk{border:0;background:none;color:var(--mut);cursor:pointer;font:inherit;font-size:13px;text-decoration:underline;padding:0}
 .acts{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}.acts button{font:inherit;font-size:12px;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:2px 6px;cursor:pointer}
-.legend span{display:inline-block;padding:1px 8px;margin-right:4px;border-radius:9px;color:var(--txt);font-size:12px}.legend .edge{color:var(--mut);padding:0;margin-left:8px;font-size:12px}
+.legend span{display:inline-block;padding:0 8px;margin-right:4px;border:1px solid transparent;border-radius:9px;color:var(--txt);font-size:12px}.legend .idea{background:none;border:2px dashed var(--fg);color:var(--fg)}.legend .edge{color:var(--mut);padding:0;margin-left:8px;font-size:12px}
 main{flex:1;display:flex;min-height:0}
 #cy{flex:1;min-width:0}
 aside{width:300px;padding:12px;background:var(--panel);overflow:auto;border-left:1px solid var(--line)}
 aside h2{font-size:16px;margin:0 0 4px}aside .mut{color:var(--mut);font-size:13px}
 aside .tag{font-family:monospace}aside a{color:inherit}aside ul{padding-left:18px}
 .desc{border-top:1px solid var(--line);margin:8px 0;font-size:14px}.desc pre{overflow:auto;background:var(--bg);padding:6px}.desc code{font-size:13px}.desc h1,.desc h2,.desc h3{font-size:15px;margin:10px 0 4px}.desc table{border-collapse:collapse}.desc th,.desc td{border:1px solid var(--line);padding:2px 6px}
-.admonition{border-left:3px solid var(--planned);background:var(--bg);margin:8px 0;padding:2px 8px}.admonition-title{font-weight:600;margin:4px 0}
-.prog{height:8px;background:var(--idea);border-radius:4px;margin:6px 0}.prog div{height:100%;background:var(--done);border-radius:4px}
+.admonition{border-left:3px solid var(--ready);background:var(--bg);margin:8px 0;padding:2px 8px}.admonition-title{font-weight:600;margin:4px 0}
+.prog{height:8px;background:var(--neutral);border-radius:4px;margin:6px 0}.prog div{height:100%;background:var(--done);border-radius:4px}
 @media(max-width:700px){main{flex-direction:column}aside{width:auto;max-height:35vh;border-left:0;border-top:1px solid var(--line)}}
 </style></head><body>
 <header><h1>SPy roadmap</h1><span class="legend" id="legend"></span><span class="mut" id="count"></span></header>
@@ -46,17 +46,27 @@ aside .tag{font-family:monospace}aside a{color:inherit}aside ul{padding-left:18p
 const DATA = __DATA__;
 const $ = id => document.getElementById(id);
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const COL = {done:'--done','in-progress':'--wip',planned:'--planned',idea:'--idea',blocked:'--blocked'};
+// Colors code the state (blocked / ready / in progress / done); idea vs planned is the dashed outline.
+// A goal is not implemented directly, so a goal that is not started and not blocked is neutral, not "ready".
+const COL = {blocked:'--blocked',ready:'--ready','in-progress':'--wip',done:'--done',unstarted:'--neutral'};
+const LEGEND = {blocked:'blocked',ready:'ready to start','in-progress':'in progress',done:'done',unstarted:'goal, not started'};
 const pillarTitle = Object.fromEntries(DATA.pillars.map(p => [p.id, p.title]));
 const pillarIds = DATA.pillars.map(p => p.id);
 const byId = Object.fromEntries(DATA.nodes.map(n => [n.id, n]));
 const prereqs = n => [...(n.blockers || []), ...(n.contributors || [])];
-// "blocked" is derived, not stored: a planned or in-progress node with at least one unfinished blocker.
-DATA.nodes.forEach(n => { n.shown = n.status;
-  if ((n.status === 'planned' || n.status === 'in-progress') && (n.blockers || []).some(b => byId[b].status !== 'done')) n.shown = 'blocked'; });
+// The state shown is derived, not stored. Not done and with an unfinished blocker: blocked (ideas too).
+// Otherwise: in progress, or done; or, for a node not started, ready (a goal: unstarted, since nobody implements a goal directly).
+DATA.nodes.forEach(n => {
+  if (n.status === 'done') n.shown = 'done';
+  else if ((n.blockers || []).some(b => byId[b].status !== 'done')) n.shown = 'blocked';
+  else if (n.status === 'in-progress') n.shown = 'in-progress';
+  else n.shown = n.kind === 'goal' ? 'unstarted' : 'ready';
+});
+const stateText = n => n.shown === 'blocked' || n.shown === 'ready' ? `${n.shown} (${n.status})` : n.status;
 const el = (tag, text, attrs={}) => { const e = document.createElement(tag); if (text) e.textContent = text; Object.assign(e, attrs); return e; };
 
-for (const s in COL) { const sp = el('span', s); sp.style.background = css(COL[s]); $('legend').append(sp); }
+for (const s in COL) { const sp = el('span', LEGEND[s]); sp.style.background = css(COL[s]); $('legend').append(sp); }
+$('legend').append(el('span', 'dashed outline: idea', {className: 'idea'}));
 $('legend').append(el('span', '→ blocks   ⇢ contributes to', {className: 'edge'}));
 const goals = DATA.nodes.filter(n => n.kind === 'goal');
 const isMain = n => !goals.some(g => prereqs(g).includes(n.id));
@@ -124,7 +134,7 @@ function syncControls() {
 const cy = cytoscape({
   container: $('cy'),
   elements: [
-    ...DATA.nodes.map(n => ({data: {id: n.id, label: n.title, status: n.shown, pillar: n.pillar, kind: n.kind, main: isMain(n) ? 1 : 0}})),
+    ...DATA.nodes.map(n => ({data: {id: n.id, label: n.title, status: n.shown, idea: n.status === 'idea' ? 1 : 0, pillar: n.pillar, kind: n.kind, main: isMain(n) ? 1 : 0}})),
     ...DATA.nodes.flatMap(n => [...(n.blockers || []).map(d => ['blocks', d]), ...(n.contributors || []).map(d => ['contrib', d])]
       .map(([kind, d]) => ({data: {id: d + '>' + n.id, source: d, target: n.id, kind}}))),
   ],
@@ -134,6 +144,8 @@ const cy = cytoscape({
       'background-color': n => css(COL[n.data('status')])}},
     {selector: 'node[kind = "goal"]', style: {'border-width': 3, 'border-color': css('--fg'), 'font-weight': 'bold'}},
     {selector: 'node[main = 1][kind = "goal"]', style: {'font-size': 14, padding: '12px', 'border-width': 4}},
+    {selector: 'node[idea = 1]', style: {'border-style': 'dashed'}},
+    {selector: 'node[idea = 1][kind != "goal"]', style: {'border-width': 2, 'border-color': css('--fg')}},
     {selector: 'edge', style: {width: 1.5, 'line-color': css('--line'), 'target-arrow-color': css('--line'), 'target-arrow-shape': 'triangle', 'curve-style': 'bezier'}},
     {selector: 'edge[kind = "contrib"]', style: {'line-style': 'dashed', 'line-dash-pattern': [6, 4], width: 1.2}},
     {selector: '.dim', style: {opacity: 0.15}},
@@ -163,7 +175,7 @@ function refresh(save = true) {
   cy.batch(() => {
     cy.elements().removeClass('dim hl root');
     cy.nodes().forEach(n => {
-      let show = state.pillars.has(n.data('pillar')) && !(state.hidedone && n.data('status') === 'done') && !(state.hideideas && n.data('status') === 'idea');
+      let show = state.pillars.has(n.data('pillar')) && !(state.hidedone && n.data('status') === 'done') && !(state.hideideas && n.data('idea'));
       if (active && state.others === 'hide' && !fs.contains(n)) show = false;
       if (roots.contains(n)) show = true;
       n.style('display', show ? 'element' : 'none');
@@ -184,7 +196,7 @@ function progress(id) {
 }
 cy.on('tap', 'node', e => {
   const n = byId[e.target.id()], p = $('panel');
-  p.replaceChildren(el('h2', n.title), el('div', `${n.kind} · ${n.shown === n.status ? n.status : 'blocked (' + n.status + ')'} · ${pillarTitle[n.pillar]}${n.when ? ' · ' + n.when : ''}`, {className: 'mut'}), el('div', n.id, {className: 'mut tag'}), el('p', n.summary));
+  p.replaceChildren(el('h2', n.title), el('div', `${n.kind} · ${stateText(n)} · ${pillarTitle[n.pillar]}${n.when ? ' · ' + n.when : ''}`, {className: 'mut'}), el('div', n.id, {className: 'mut tag'}), el('p', n.summary));
   const acts = el('div', '', {className: 'acts'});
   const act = (label, fn) => acts.append(el('button', label, {type: 'button', onclick: () => { fn(); refresh(); e.target.emit('tap'); }}));
   act('Path to this node', () => { state.focus = [n.id]; state.scope = 'up'; state.others = 'hide'; });

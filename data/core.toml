@@ -34,8 +34,8 @@ summary = "SPy compiles most of the Python used by real programs (classes, excep
 blockers = ["heap-classes", "try-catch", "with-ctx", "str-bytes"]
 contributors = ["fstrings", "list-literals", "dict-literals", "tuple", "for-loops", "default-args", "is-op", "pep695"]
 
-[better-language]
-title = "Better language"
+[types-metaprog]
+title = "Expressive types and metaprogramming"
 kind = "goal"
 status = "planned"
 summary = "Language features that go beyond Python: protocols, variants (sum types), compile-time metaprogramming."
