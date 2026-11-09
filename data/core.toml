@@ -321,3 +321,16 @@ kind = "feature"
 status = "done"
 when = "2025-Q3"
 summary = "Proper messages instead of assertion errors; error when a blue function gets red arguments."
+
+[parallelism]
+title = "Parallelism"
+kind = "goal"
+status = "idea"
+summary = "SPy programs use several CPU cores."
+contributors = ["isolate"]
+
+[isolate]
+title = "Isolate"
+kind = "feature"
+status = "idea"
+summary = "A piece of program with its own memory, that can run in parallel with others without sharing mutable data."

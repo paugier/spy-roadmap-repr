@@ -1,8 +1,9 @@
 In checked mode, a pointer carries the length of its region; in release mode it is a bare
 address. Code that takes "a range of an array" as argument therefore cannot rely on the
-length. The roadmap lists a distinct pointer-to-bounded-array type (see
-[Pointer kinds](node:ptr-kinds)), which is spelled `span[T]` here: an address plus a
-length, in every mode, like a Rust slice.
+length. The missing pointer type is the pointer to a bounded array, spelled `span[T]` here (a
+proposal): an address plus a length, in every mode, like a Rust slice. Pointers to an
+unbounded array already exist, and [pointers to an object](node:ptr-to-object) are the
+other missing kind.
 
 ```python
 def total(xs: span[f64]) -> f64:

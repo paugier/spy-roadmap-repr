@@ -18,7 +18,7 @@ title = "Low-level programming in SPy"
 kind = "goal"
 status = "planned"
 summary = "Northern star of this pillar: SPy is expressive enough to write numerical kernels, binary-format parsers and wrappers around C libraries, with the control a C programmer expects."
-contributors = ["inline-array", "noalias", "layout-control", "unions", "bit-ops", "small-numeric-types", "span", "raw-free", "ptr-kinds"]
+contributors = ["inline-array", "noalias", "layout-control", "unions", "bit-ops", "small-numeric-types", "ptr-to-object", "ptr-to-bounded-array", "raw-free"]
 
 [inline-array]
 title = "Fixed-size arrays (InlineArray)"
@@ -59,11 +59,17 @@ kind = "feature"
 status = "idea"
 summary = "16-bit integers and half-precision floats, to read audio and image formats and to store large arrays in less memory."
 
-[span]
-title = "Slices that keep their length (span)"
+[ptr-to-object]
+title = "Pointers to an object"
 kind = "feature"
 status = "planned"
-summary = "A pointer plus a length in every build mode, like a Rust slice, to pass a range of an array to a function."
+summary = "A pointer type for a single object, distinct from a pointer to an array. Pointers to an unbounded array already exist."
+
+[ptr-to-bounded-array]
+title = "Pointers to a bounded array (fat pointer, span)"
+kind = "feature"
+status = "planned"
+summary = "An address plus a length in every build mode, like a C++ span or a Rust slice, to pass a range of an array to a function. Pointers to an unbounded array already exist."
 
 [raw-free]
 title = "Releasing raw memory (raw_free and with)"

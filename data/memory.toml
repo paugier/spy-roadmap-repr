@@ -4,12 +4,6 @@
 title = "Memory management"
 order = 3
 
-[ptr-kinds]
-title = "Pointer kinds (object, unbounded and bounded array)"
-kind = "feature"
-status = "planned"
-summary = "Distinguish the three pointer kinds, similar to Rust slices."
-
 [refcounting]
 title = "Reference counting"
 kind = "feature"

@@ -191,3 +191,17 @@ links = [
   "https://github.com/spylang/spy/pull/394",
   "https://github.com/spylang/spy/pull/460",
 ]
+
+[scispy]
+title = "SciSPy"
+kind = "goal"
+status = "idea"
+summary = "A SciPy-like library of scientific algorithms written in SPy, on top of NumSPy."
+blockers = ["numspy", "isolate", "blas-lapack"]
+
+[blas-lapack]
+title = "BLAS/LAPACK wrapped"
+kind = "feature"
+status = "idea"
+summary = "Linear algebra routines (matrix products, solvers, decompositions) of the BLAS and LAPACK C libraries, callable from SPy."
+blockers = ["c-integration"]

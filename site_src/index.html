@@ -21,7 +21,7 @@ main{flex:1;display:flex;min-height:0}
 #cy{flex:1;min-width:0}
 aside{width:300px;padding:12px;background:var(--panel);overflow:auto;border-left:1px solid var(--line)}
 aside h2{font-size:16px;margin:0 0 4px}aside .mut{color:var(--mut);font-size:13px}
-aside a{color:inherit}aside ul{padding-left:18px}
+aside .tag{font-family:monospace}aside a{color:inherit}aside ul{padding-left:18px}
 .desc{border-top:1px solid var(--line);margin:8px 0;font-size:14px}.desc pre{overflow:auto;background:var(--bg);padding:6px}.desc code{font-size:13px}.desc h1,.desc h2,.desc h3{font-size:15px;margin:10px 0 4px}.desc table{border-collapse:collapse}.desc th,.desc td{border:1px solid var(--line);padding:2px 6px}
 .admonition{border-left:3px solid var(--planned);background:var(--bg);margin:8px 0;padding:2px 8px}.admonition-title{font-weight:600;margin:4px 0}
 .prog{height:8px;background:var(--idea);border-radius:4px;margin:6px 0}.prog div{height:100%;background:var(--done);border-radius:4px}
@@ -184,7 +184,7 @@ function progress(id) {
 }
 cy.on('tap', 'node', e => {
   const n = byId[e.target.id()], p = $('panel');
-  p.replaceChildren(el('h2', n.title), el('div', `${n.kind} · ${n.shown === n.status ? n.status : 'blocked (' + n.status + ')'} · ${pillarTitle[n.pillar]}${n.when ? ' · ' + n.when : ''}`, {className: 'mut'}), el('p', n.summary));
+  p.replaceChildren(el('h2', n.title), el('div', `${n.kind} · ${n.shown === n.status ? n.status : 'blocked (' + n.status + ')'} · ${pillarTitle[n.pillar]}${n.when ? ' · ' + n.when : ''}`, {className: 'mut'}), el('div', n.id, {className: 'mut tag'}), el('p', n.summary));
   const acts = el('div', '', {className: 'acts'});
   const act = (label, fn) => acts.append(el('button', label, {type: 'button', onclick: () => { fn(); refresh(); e.target.emit('tap'); }}));
   act('Path to this node', () => { state.focus = [n.id]; state.scope = 'up'; state.others = 'hide'; });
