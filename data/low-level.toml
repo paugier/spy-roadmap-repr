@@ -142,6 +142,7 @@ summary = "Compile for a given CPU instruction set. The runtime library libspy i
 links = [
   "https://github.com/spylang/spy/pull/745",
 ]
+contributors = ["libspy-autobuild"]
 
 [c-portability]
 title = "C11 and portability macros for generated C"

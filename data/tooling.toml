@@ -4,12 +4,50 @@
 title = "Documentation and tooling"
 order = 7
 
-[dev-experience]
-title = "Pleasant developer experience"
+[dx-users]
+title = "Pleasant experience for SPy users"
 kind = "goal"
 status = "in-progress"
-summary = "SPy is easy to try, learn and debug: a command-line tool with clear subcommands, documentation, readable error messages and tracebacks, and a playground in the browser."
-contributors = ["cli-subcommands", "docs", "html-ast", "playground-share", "debugging", "errors-checks"]
+summary = "People who write programs with SPy can install it in one command, try it, learn it and debug their code: a command-line tool with clear subcommands, documentation, readable error messages and tracebacks, and a playground in the browser."
+contributors = ["spy-pypi", "libspy-autobuild", "no-make", "cli-subcommands", "docs", "playground-share", "debugging", "errors-checks"]
+
+[dx-contributors]
+title = "Pleasant experience for SPy contributors"
+kind = "goal"
+status = "in-progress"
+summary = "People who work on SPy itself (the compiler, the interpreter, the runtime library) can build it quickly, inspect what it does and test their changes without friction."
+contributors = ["no-make", "libspy-autobuild", "html-ast"]
+
+[spy-pypi]
+title = "SPy on PyPI (universal wheel)"
+kind = "task"
+status = "in-progress"
+summary = "Install SPy with a single pip or uv command, on any platform, without building anything. The wheel contains the precompiled runtime library libspy."
+contributors = ["libspy-autobuild", "no-make"]
+links = [
+  "https://github.com/spylang/spy/pull/745",
+  "https://github.com/spylang/spy/pull/748",
+]
+
+[libspy-autobuild]
+title = "Automatic rebuild of libspy and caching"
+kind = "task"
+status = "in-progress"
+summary = "The runtime library libspy is rebuilt automatically when needed (for example for another target CPU) and the result is cached, so nobody has to run a separate build step."
+links = [
+  "https://github.com/spylang/spy/pull/745",
+  "https://github.com/spylang/spy/pull/748",
+]
+
+[no-make]
+title = "Remove the Make dependency"
+kind = "task"
+status = "in-progress"
+summary = "Building libspy and the generated C no longer requires the make tool, which is hard to get on some platforms (Windows in particular)."
+links = [
+  "https://github.com/spylang/spy/pull/745",
+  "https://github.com/spylang/spy/pull/748",
+]
 
 [cli-subcommands]
 title = "CLI with subcommands"

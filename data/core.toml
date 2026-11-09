@@ -10,7 +10,7 @@ kind = "goal"
 status = "planned"
 summary = "Programs run in the SPy interpreter (before compilation) much faster than today. The way there is to compile the interpreter itself with SPy."
 blockers = ["selfhost-interp"]
-contributors = ["live-image"]
+contributors = ["live-image", "native-stdlib"]
 
 [selfhost-interp]
 title = "Self-hosting: compile the SPy interpreter and compiler"
@@ -190,6 +190,15 @@ title = "Function types and function values (Callable)"
 kind = "feature"
 status = "planned"
 summary = "Pass a function as an argument and call it at run time, for example a comparison function given to a sort. The spelling Callable[[i32, i32], i32] is a proposal."
+
+[native-stdlib]
+title = "PROTOTYPE: interpreter calls compiled stdlib functions"
+kind = "task"
+status = "in-progress"
+summary = "Stdlib modules (starting with random) are compiled ahead of time, and the interpreter calls the compiled functions instead of interpreting them. It is a prototype, not a plan yet."
+links = [
+  "https://github.com/spylang/spy/pull/755",
+]
 
 [live-image]
 title = "Serialize the live image after redshifting"
