@@ -41,7 +41,7 @@ summary = "Choose how struct fields are laid out in memory, for binary file form
 blockers = ["calc-layout-c-rules", "layout-agree-check", "sizeof-alignof-types", "ptr-size-platform"]
 
 [unions]
-title = "Unions (ll_union) and tagged unions"
+title = "Unions (ll_union)"
 kind = "feature"
 status = "idea"
 summary = "Types whose fields share the same bytes: the building block of variants (sum types)."
