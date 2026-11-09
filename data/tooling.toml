@@ -4,6 +4,13 @@
 title = "Documentation and tooling"
 order = 7
 
+[dev-experience]
+title = "Pleasant developer experience"
+kind = "goal"
+status = "in-progress"
+summary = "SPy is easy to try, learn and debug: a command-line tool with clear subcommands, documentation, readable error messages and tracebacks, and a playground in the browser."
+contributors = ["cli-subcommands", "docs", "html-ast", "playground-share", "debugging", "errors-checks"]
+
 [cli-subcommands]
 title = "CLI with subcommands"
 kind = "task"

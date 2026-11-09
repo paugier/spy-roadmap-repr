@@ -18,7 +18,7 @@ title = "Low-level programming in SPy"
 kind = "goal"
 status = "planned"
 summary = "Northern star of this pillar: SPy is expressive enough to write numerical kernels, binary-format parsers and wrappers around C libraries, with the control a C programmer expects."
-contributors = ["inline-array", "noalias", "layout-control", "unions", "bit-ops", "small-numeric-types", "span", "raw-free"]
+contributors = ["inline-array", "noalias", "layout-control", "unions", "bit-ops", "small-numeric-types", "span", "raw-free", "ptr-kinds"]
 
 [inline-array]
 title = "Fixed-size arrays (InlineArray)"

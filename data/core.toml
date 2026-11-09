@@ -10,6 +10,7 @@ kind = "goal"
 status = "planned"
 summary = "Programs run in the SPy interpreter (before compilation) much faster than today. The way there is to compile the interpreter itself with SPy."
 blockers = ["selfhost-interp"]
+contributors = ["live-image"]
 
 [selfhost-interp]
 title = "Self-hosting: compile the SPy interpreter and compiler"
@@ -31,6 +32,7 @@ kind = "goal"
 status = "planned"
 summary = "SPy compiles most of the Python used by real programs (classes, exceptions, context managers, strings), not only numerical code."
 blockers = ["heap-classes", "try-catch", "with-ctx", "str-bytes"]
+contributors = ["fstrings", "list-literals", "dict-literals", "tuple", "for-loops", "default-args", "is-op", "pep695"]
 
 [better-language]
 title = "Better language"
@@ -67,7 +69,7 @@ kind = "feature"
 status = "planned"
 summary = "Generate specialized code from a compile-time-known number of arguments: a function that takes any number of typed arguments, and calls that spread them. It is the tool behind helpers such as vectorize, benchmark and partial."
 blockers = ["unroll-for-usable", "unroll-splice", "starred-blue", "args-types-red"]
-contributors = ["blue-args", "blue-kwargs", "args_m-loc", "args_m-types"]
+contributors = ["blue-args", "blue-kwargs", "args_m-loc", "args_m-types", "dunder-meta", "print-varargs"]
 
 [unroll-splice]
 title = "Unroll for splicing"

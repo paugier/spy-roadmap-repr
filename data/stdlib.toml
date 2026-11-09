@@ -10,7 +10,7 @@ kind = "goal"
 status = "in-progress"
 summary = "An implementation of the Python array API standard written in SPy: numpy-like arrays that compile to fast code."
 blockers = ["array-improve", "explicit-vectorization"]
-contributors = ["inline-array"]
+contributors = ["inline-array", "f32-complex"]
 
 [python-like-lib]
 title = "Python-like libs"
@@ -25,14 +25,14 @@ title = "Python-like core"
 kind = "goal"
 status = "planned"
 summary = "The core types and functions a Python user expects (str, bytes, list, dict, array, file I/O) are in SPy and behave as in Python."
-contributors = ["str-bytes", "array-improve", "full-io"]
+contributors = ["str-bytes", "array-improve", "full-io", "builtin-types"]
 
 [cli-lib]
 title = "Typer/click-like CLI library"
 kind = "feature"
 status = "idea"
 summary = "A library to declare command-line tools (arguments, options, subcommands) from function signatures, with the API of Typer and click."
-blockers = ["python-subset"]
+blockers = ["python-subset", "cli-args"]
 
 [python-like-stdlib]
 title = "Python-like stdlib"
