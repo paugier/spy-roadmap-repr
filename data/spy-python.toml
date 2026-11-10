@@ -8,8 +8,8 @@ order = 6
 title = "Python interop"
 kind = "goal"
 status = "planned"
-summary = "SPy and Python work together in both directions, and exchange arrays without copying. SPy then becomes a better Cython."
-contributors = ["call-python-from-spy", "call-spy-from-python", "array-memoryview"]
+summary = "SPy and Python work together in both directions, and exchange arrays without copying. A Python project can use SPy for compiled extension modules, for dual packages that also run without CPython, or behind a native launcher."
+contributors = ["call-python-from-spy", "call-spy-from-python", "array-memoryview", "py-ext-packages", "dual-packages", "native-launcher"]
 
 [call-python-from-spy]
 title = "Call Python from SPy"
@@ -23,7 +23,7 @@ title = "Call SPy from Python (C extensions)"
 kind = "goal"
 status = "planned"
 summary = "SPy modules can be compiled to CPython C extensions and imported from Python."
-blockers = ["py-cffi", "refcounting"]
+blockers = ["py-cffi", "refcounting", "c-integration"]
 
 [py-cffi]
 title = "py-cffi output kind"
@@ -38,3 +38,109 @@ kind = "feature"
 status = "planned"
 summary = "Automatic conversion between SPy arrays and numpy arrays."
 blockers = ["py-cffi", "array-improve"]
+
+# Python package with SPy extensions (Cython-like)
+
+[py-ext-packages]
+title = "Python package with SPy extensions"
+kind = "feature"
+status = "idea"
+summary = "A normal Python package where some modules are written in SPy and compiled to extension modules, as with Cython. The rest of the package stays ordinary Python."
+blockers = ["call-spy-from-python", "py-ext-build", "py-boundary"]
+
+[py-ext-build]
+title = "Build integration and wheels"
+kind = "task"
+status = "idea"
+summary = "A Python build tool compiles the .spy files and puts the extension modules in the wheels."
+blockers = ["call-spy-from-python"]
+
+[py-boundary]
+title = "Python/SPy value conversion"
+kind = "feature"
+status = "idea"
+summary = "A convention to convert values between Python objects and SPy types at the boundary. Arrays are the natural case, through NumSPy and the array API."
+contributors = ["array-memoryview"]
+
+# Native launcher
+
+[native-launcher]
+title = "Native launcher"
+kind = "goal"
+status = "idea"
+summary = "A native binary that starts without Python, handles the frequent and fast cases itself, and starts a Python program only for the rare ones. It gives a very fast startup, which matters for tools launched often, such as language servers."
+blockers = ["launcher-prototype"]
+contributors = ["cli-lib"]
+
+[launcher-prototype]
+title = "Prototype of a launcher"
+kind = "task"
+status = "idea"
+summary = "A launcher that handles the fast cases of one tool and delegates the others to its Python program."
+blockers = ["mod-argparse", "mod-subprocess"]
+
+# Python mode and dual packages
+
+[dual-packages]
+title = "Dual packages"
+kind = "goal"
+status = "idea"
+summary = "A package that can be imported and run with CPython alone, or with SPy alone. One code base, and a SPy program using it can be compiled to a native binary."
+blockers = ["spy-load-py"]
+contributors = ["check-py-mode", "py-test-plugin", "dual-fixedint"]
+
+[py-int-rule]
+title = "Integer rule for Python mode"
+kind = "problem"
+status = "idea"
+summary = "In SPy an integer literal is an i32 that wraps around on overflow; in CPython an int has no limit, so the same code can give different results. Three options are open and no decision is made."
+
+[py-mode-subset]
+title = "Define the Python-mode subset"
+kind = "task"
+status = "idea"
+summary = "Decide which part of Python a module may use to be valid both for CPython and for high-level SPy."
+blockers = ["py-int-rule"]
+
+[py-mode-lib]
+title = "spy_py_mode library"
+kind = "feature"
+status = "idea"
+summary = "A pure Python package that provides the SPy names a module needs when CPython runs it: numeric types (i32, f64...), blue and the other decorators, exec_main, and possibly is_spy. The names are proposals."
+blockers = ["py-mode-subset"]
+
+[spy-load-py]
+title = "SPy loads .py files"
+kind = "feature"
+status = "idea"
+summary = "When SPy resolves an import, a .spy file wins over a .py file with the same name; a .py file with no .spy counterpart must be in Python mode."
+blockers = ["py-mode-subset", "py-mode-lib"]
+
+[check-py-mode]
+title = "spy check-py-mode"
+kind = "feature"
+status = "idea"
+summary = "A command that reports every construct SPy would reach that is outside the Python-mode subset: unsupported syntax, untyped integer arithmetic, dynamic features such as exec. It tells a package author what to adapt."
+blockers = ["py-mode-subset"]
+
+[py-test-plugin]
+title = "pytest plugin for the three execution modes"
+kind = "feature"
+status = "idea"
+summary = "A test is written once, in Python mode, and run in the three execution modes (py, interp, compiled). A difference between modes is a bug."
+blockers = ["py-mode-lib", "spy-load-py"]
+
+[dual-fixedint]
+title = "fixedint as a dual package"
+kind = "task"
+status = "idea"
+summary = "First real test of a dual package: fixedint (fixed-width integers, a dependency of SPy) builds its classes at run time, so its SPy version needs metaprogramming while the Python file stays unchanged."
+blockers = ["spy-load-py"]
+contributors = ["metaclasses"]
+
+[dual-leaf-modules]
+title = "Adapt leaf modules of SPy"
+kind = "task"
+status = "idea"
+summary = "Make the modules of SPy that depend on few others (fqn, textbuilder, util) work in Python mode, as a first step of self-hosting."
+blockers = ["spy-load-py"]

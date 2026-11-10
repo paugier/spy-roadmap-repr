@@ -16,15 +16,16 @@ contributors = ["live-image", "native-stdlib"]
 title = "Self-hosting: compile the SPy interpreter and compiler"
 kind = "goal"
 status = "planned"
-summary = "The SPy interpreter and compiler, written in Python, are themselves compiled by SPy."
-blockers = ["python-subset"]
+summary = "Level 1 of self-hosting: the SPy interpreter and compiler (about 28,000 lines of Python in 104 files) are themselves compiled by SPy."
+blockers = ["python-subset", "blue-annotations"]
+contributors = ["dual-leaf-modules", "mod-pathlib", "mod-re", "mod-math", "mod-collections"]
 
 [selfhost-cli]
-title = "Self-hosting: compile the SPy CLI"
+title = "Self-hosting: the spy command as a native launcher"
 kind = "goal"
 status = "planned"
-summary = "The spy command-line tool, written in Python, is compiled by SPy too: the whole toolchain runs without CPython."
-blockers = ["selfhost-interp", "python-like-core", "cli-lib", "mod-posix"]
+summary = "Level 2 of self-hosting: the spy command-line tool is a native launcher. It starts instantly and starts Python only for the tasks that still need it (parsing, build, ninja, wasmtime, pexpect, ziglang)."
+blockers = ["selfhost-interp", "native-launcher", "python-like-core", "cli-lib", "mod-argparse", "mod-subprocess", "mod-posix"]
 
 [python-subset]
 title = "Compile a large subset of Python"
@@ -343,3 +344,43 @@ title = "Isolate"
 kind = "feature"
 status = "idea"
 summary = "A piece of program with its own memory, that can run in parallel with others without sharing mutable data."
+
+[blue-annotations]
+title = "Inspect annotations at blue time"
+kind = "feature"
+status = "idea"
+summary = "The interpreter reads the type annotations of its own functions at run time to derive SPy types (typing.Annotated, get_origin, inspect.signature). Self-hosting needs the equivalent inside SPy, at compile time (blue time)."
+
+[selfhost-pyast]
+title = "Self-hosting: parse Python in SPy (pyast)"
+kind = "goal"
+status = "idea"
+summary = "Level 3 of self-hosting: the parser is a pyast module written in SPy, so the compiler no longer calls the CPython ast module."
+blockers = ["selfhost-interp", "pyast-nodes", "pyast-tokenizer", "pegen-spy-backend"]
+
+[pyast-nodes]
+title = "pyast node classes from Python.asdl"
+kind = "task"
+status = "idea"
+summary = "Generate the AST node classes from the ASDL file of CPython, for a chosen target version (for example 3.12 or 3.13). A small task."
+
+[pyast-tokenizer]
+title = "pyast tokenizer and action helpers"
+kind = "task"
+status = "idea"
+summary = "Port by hand the C tokenizer (indentation, encodings, f-strings since 3.12) and the helpers used by the parser actions. This is the bulk of the work, and the tokenizer is probably the hardest part."
+
+[pegen-spy-backend]
+title = "SPy backend for pegen"
+kind = "feature"
+status = "idea"
+summary = "A generator that emits the parser in Python mode from the grammar of CPython, so that the parser is a dual package that can be tested against the CPython parser."
+blockers = ["py-mode-subset"]
+contributors = ["py-test-plugin"]
+
+[selfhost-full]
+title = "Full self-hosting"
+kind = "goal"
+status = "idea"
+summary = "Level 4 of self-hosting: no Python interpreter or virtual environment. The build chain, wasmtime, pexpect and ziglang must exist in SPy, or as native tools called by the binary. A very far target."
+blockers = ["selfhost-cli", "selfhost-pyast"]

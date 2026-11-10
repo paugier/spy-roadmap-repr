@@ -33,6 +33,7 @@ kind = "feature"
 status = "idea"
 summary = "A library to declare command-line tools (arguments, options, subcommands) from function signatures, with the API of Typer and click."
 blockers = ["python-subset", "cli-args"]
+contributors = ["dual-packages"]
 
 [python-like-stdlib]
 title = "Python-like stdlib"

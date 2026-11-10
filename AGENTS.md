@@ -196,6 +196,10 @@ the dagre layout, loaded from jsDelivr at pinned versions (keep exact versions).
 
 - `ROADMAP.md` in the SPy repo (version of 2026-04-17) seeded the first 44 nodes.
 - SPy issues and pull requests give the links and the `done` status.
+- The SPy book page "Python mode, dual packages and native launcher" gave the Python
+  mode, dual package, native launcher and self-hosting nodes (levels 1 to 4). They are all
+  `idea`: the page is a design note, the integer rule is undecided, and its plan items
+  are unchecked.
 - The SPy book pages "Low-level features SPy still needs" and "Fixed-size arrays" gave the
   "Low-level features" pillar. Their proposals are `idea` nodes; PR #749 (`calc_layout`)
   is `in-progress` and its real status should be verified.
