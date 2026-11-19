@@ -124,19 +124,23 @@ links = [
 [blue-len-tuple]
 title = "len(tuple) should be blue"
 kind = "problem"
-status = "planned"
-summary = "The length of a tuple is part of its type. COLOR(len(tup)), with tup a red (run-time) tuple, should be blue (known at compile time), so that it can drive an unrolled loop."
+status = "done"
+when = "2026-Q4"
+summary = "The length of a tuple is part of its type. COLOR(len(tup)), with tup a red (run-time) tuple, is blue (known at compile time), so that it can drive an unrolled loop."
 links = [
   "https://github.com/spylang/spy/issues/760",
+  "https://github.com/spylang/spy/pull/766",
 ]
 
 [blue-struct-tuple-range]
 title = "Blue structs, tuple, range"
 kind = "feature"
-status = "planned"
+status = "done"
+when = "2026-Q4"
 summary = "Structs, tuples and ranges whose content is known at compile time are handled as compile-time (blue) values."
 links = [
   "https://github.com/spylang/spy/issues/761",
+  "https://github.com/spylang/spy/pull/770",
 ]
 
 [args_m-types]
